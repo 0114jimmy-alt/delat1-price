@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>三角洲行動 - 完整服務價目表</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Microsoft JhengHei', Arial, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0a0e14 0%, #1a1f29 100%);
+            color: #ffffff;
+            width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* 頁面容器 */
+        .page {
+            background: linear-gradient(135deg, #1a1f29 0%, #0f131a 100%);
+            border: 3px solid #333945;
+            border-radius: 10px;
+            box-shadow: 0 0 40px rgba(255, 102, 0, 0.3);
+            padding: 30px;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        /* 標題區 */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #ff6600;
+        }
+
+        .delta-title {
+            background: linear-gradient(90deg, #ff6600, #ffaa00);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-size: 3.5rem;
+            font-weight: bold;
+            letter-spacing: 3px;
+            text-shadow: 0 0 15px rgba(255, 102, 0, 0.5);
+            margin-bottom: 5px;
+        }
+
+        .page-subtitle {
+            color: #8a9ba8;
+            font-size: 1.2rem;
+            letter-spacing: 4px;
+        }
+
+        /* 價格區塊 */
+        .service-section {
+            margin: 25px 0;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            color: #ffcc00;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            padding-left: 15px;
+            border-left: 5px solid #ff6600;
+        }
+
+        .price-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+        }
+
+        .price-column {
+            border: 2px solid #2a3240;
+            border-radius: 8px;
+            padding: 25px;
+            background-color: rgba(22, 27, 37, 0.8);
+        }
+
+        .price-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 2px dashed #2a3240;
+        }
+
+        .price-item:last-child {
+            border-bottom: none;
+        }
+
+        .price-tag {
+            color: #00ff9d;
+            font-size: 1.8rem;
+            font-weight: bold;
+            text-shadow: 0 0 8px rgba(0, 255, 157, 0.6);
+            background-color: rgba(0, 50, 30, 0.4);
+            padding: 8px 20px;
+            border-radius: 5px;
+            border: 2px solid #00ff9d;
+            min-width: 120px;
+            text-align: center;
+        }
+
+        .guarantee-text {
+            color: #66b3ff;
+            font-size: 1.4rem;
+            font-weight: bold;
+            text-align: right;
+            flex-grow: 1;
+            margin-left: 20px;
+        }
+
+        /* 特殊價格 */
+        .special-price {
+            color: #ff66ff;
+            border-color: #ff66ff;
+            background-color: rgba(80, 0, 80, 0.4);
+        }
+
+        /* 註釋框 */
+        .note-box {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 5px;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .warning-box {
+            background-color: rgba(255, 50, 50, 0.15);
+            border-left: 5px solid #ff3333;
+            color: #ff9999;
+        }
+
+        .info-box {
+            background-color: rgba(0, 150, 255, 0.15);
+            border-left: 5px solid #0096ff;
+            color: #99ccff;
+        }
+
+        .tip-box {
+            background-color: rgba(255, 204, 0, 0.15);
+            border-left: 5px solid #ffcc00;
+            color: #ffdd66;
+        }
+
+        /* 娛樂陪玩表格 */
+        .peipei-table {
+            width: 100%;
+            margin: 30px 0;
+            border-collapse: collapse;
+        }
+
+        .peipei-table th {
+            background: rgba(255, 102, 0, 0.2);
+            color: #ffcc00;
+            padding: 15px;
+            font-size: 1.3rem;
+            text-align: center;
+            border: 1px solid #333945;
+        }
+
+        .peipei-table td {
+            padding: 20px;
+            text-align: center;
+            border: 1px solid #333945;
+            font-size: 1.1rem;
+        }
+
+        .gender-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        .male-bg {
+            background: rgba(0, 150, 255, 0.15);
+        }
+
+        .female-bg {
+            background: rgba(255, 102, 182, 0.15);
+        }
+
+        .peipei-price {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #00ff9d;
+            text-shadow: 0 0 8px rgba(0, 255, 157, 0.5);
+        }
+
+        /* 時長優惠區 */
+        .duration-section {
+            margin: 25px 0;
+            padding: 20px;
+            background: rgba(255, 204, 0, 0.1);
+            border-radius: 10px;
+            border: 1px solid #ffcc00;
+        }
+
+        .duration-title {
+            color: #ffcc00;
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .duration-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .duration-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #444;
+        }
+
+        .duration-name {
+            color: #ffffff;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .duration-price {
+            color: #ffcc00;
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+
+        /* 規則區 */
+        .rules-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255, 50, 50, 0.1);
+            border-radius: 10px;
+            border-left: 5px solid #ff3333;
+        }
+
+        .rules-title {
+            color: #ff6666;
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+        }
+
+        .rules-list {
+            list-style: none;
+            padding-left: 20px;
+        }
+
+        .rules-list li {
+            margin-bottom: 10px;
+            padding-left: 25px;
+            position: relative;
+            color: #ffaaaa;
+        }
+
+        .rules-list li:before {
+            content: '⚡';
+            color: #ff6600;
+            position: absolute;
+            left: 0;
+        }
+
+        /* 優惠區 */
+        .discount-section {
+            margin-top: 25px;
+            padding: 15px;
+            background: rgba(0, 255, 157, 0.1);
+            border-radius: 10px;
+            border: 1px solid #00ff9d;
+        }
+
+        .discount-title {
+            color: #00ff9d;
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+
+        /* 裝飾元素 */
+        .page-corner {
+            position: absolute;
+            width: 25px;
+            height: 25px;
+            border: 3px solid #ff6600;
+        }
+
+        .corner-tl { top: 15px; left: 15px; border-right: none; border-bottom: none; }
+        .corner-tr { top: 15px; right: 15px; border-left: none; border-bottom: none; }
+        .corner-bl { bottom: 15px; left: 15px; border-right: none; border-top: none; }
+        .corner-br { bottom: 15px; right: 15px; border-left: none; border-top: none; }
+
+        /* 頁腳 */
+        .page-footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #2a3240;
+            text-align: center;
+            color: #8a9ba8;
+            font-size: 1rem;
+        }
+
+        /* 響應式 */
+        @media (max-width: 768px) {
+            body {
+                width: 100%;
+                padding: 10px;
+            }
+            
+            .price-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .delta-title {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 第1頁：基礎/體驗單 -->
+    <div class="page">
+        <div class="page-corner corner-tl"></div>
+        <div class="page-corner corner-tr"></div>
+        <div class="page-corner corner-bl"></div>
+        <div class="page-corner corner-br"></div>
+
+        <div class="header">
+            <div class="delta-title">三角洲行動</div>
+            <div class="page-subtitle">戰術護航服務價目表 - 基礎方案</div>
+        </div>
+
+        <div class="price-grid">
+            <!-- 左欄：基礎單 -->
+            <div class="price-column">
+                <div class="section-title">
+                    <span>基礎單</span>
+                </div>
+
+                <div class="price-item">
+                    <span class="price-tag">500</span>
+                    <span class="guarantee-text">保底 600w</span>
+                </div>
+                <div class="price-item">
+                    <span class="price-tag">800</span>
+                    <span class="guarantee-text">保底 900w</span>
+                </div>
+                <div class="price-item">
+                    <span class="price-tag">1000</span>
+                    <span class="guarantee-text">保底 1300w</span>
+                </div>
+                <div class="price-item">
+                    <span class="price-tag">2000</span>
+                    <span class="guarantee-text">保底 2300w</span>
+                </div>
+                <div class="price-item">
+                    <span class="price-tag">8000</span>
+                    <span class="guarantee-text">保底 8600w</span>
+                </div>
+                <div class="price-item">
+                    <span class="price-tag">10000</span>
+                    <span class="guarantee-text">保底 11888w</span>
+                </div>
+
+                <div class="note-box tip-box">
+                    <strong>※ 炸單補償：</strong> 失敗補償 +100w (上限1000w)
+                </div>
+            </div>
+
+            <!-- 右欄：體驗單 -->
+            <div class="price-column">
+                <div class="section-title">
+                    <span>體驗單</span>
+                </div>
+
+                <div class="price-item">
+                    <span class="price-tag">200</span>
+                    <span class="guarantee-text">保底 400w</span>
+                </div>
+                <div class="price-item">
+                    <span class="price-tag">600</span>
+                    <span class="guarantee-text">保底 750w</span>
+                </div>
+                <div class="price-item">
+                    <span class="price-tag">1500</span>
+                    <span class="guarantee-text">保底 1700w</span>
+                </div>
+
+                <div class="note-box info-box" style="margin-top: 40px;">
+                    <strong>📌 進階服務：</strong><br>
+                    • 航天絕密賭約單<br>
+                    • 娛樂玩法<br>
+                    • 完整規則與條款<br>
+                    <em style="color: #66b3ff;">詳見後續頁面</em>
+                </div>
+            </div>
+        </div>
+
+        <div class="page-footer">
+            <strong>戰術守則：</strong> 任務開始前請確認需求，配合打手指令
+        </div>
+    </div>
+
+    <!-- 第2頁：航天賭約單 -->
+    <div class="page">
+        <div class="page-corner corner-tl"></div>
+        <div class="page-corner corner-tr"></div>
+        <div class="page-corner corner-bl"></div>
+        <div class="page-corner corner-br"></div>
+
+        <div class="header">
+            <div class="delta-title">航天絕密賭約單</div>
+            <div class="page-subtitle">高風險高回報 | 限單局帶出金額</div>
+        </div>
+
+        <!-- 單局挑戰 -->
+        <div class="service-section">
+            <div class="section-title">
+                <span>賭約單 - 單局挑戰</span>
+            </div>
+
+            <div class="price-column" style="background: linear-gradient(135deg, rgba(60, 0, 60, 0.3), rgba(22, 27, 37, 0.8)); border-color: #660066;">
+                <div class="price-item">
+                    <span class="price-tag special-price">1000</span>
+                    <span class="guarantee-text">單局沒有 588w 不結單</span>
+                </div>
+                <div class="price-item">
+                    <span class="price-tag special-price">1500</span>
+                    <span class="guarantee-text">單局沒有 688w 不結單</span>
+                </div>
+                <div class="price-item">
+                    <span class="price-tag special-price">2000</span>
+                    <span class="guarantee-text">單局沒有 799w 不結單</span>
+                </div>
+                <div class="price-item">
+                    <span class="price-tag special-price">2500</span>
+                    <span class="guarantee-text">單局沒有 888w 不結單</span>
+                </div>
+                <div class="price-item">
+                    <span class="price-tag special-price">3500</span>
+                    <span class="guarantee-text">單局沒有 1288w 不結單</span>
+                </div>
+                <div class="price-item">
+                    <span class="price-tag special-price">5500</span>
+                    <span class="guarantee-text">單局沒有 1488w 不結單</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 稀有目標保底 -->
+        <div class="service-section">
+            <div class="section-title">
+                <span>稀有目標保底</span>
+            </div>
+
+            <div class="price-grid">
+                <div class="price-column" style="background: linear-gradient(135deg, rgba(40, 0, 40, 0.3), rgba(22, 27, 37, 0.8)); border-color: #660066;">
+                    <div class="price-item">
+                        <span class="price-tag special-price">588</span>
+                        <span class="guarantee-text">沒出鍋保 688w</span>
+                    </div>
+                    <div class="price-item">
+                        <span class="price-tag special-price">1088</span>
+                        <span class="guarantee-text">必出鍋</span>
+                    </div>
+                    <div class="price-item">
+                        <span class="price-tag special-price">1888</span>
+                        <span class="guarantee-text">沒出油保 2000w</span>
+                    </div>
+                    <div class="price-item">
+                        <span class="price-tag special-price">4888</span>
+                        <span class="guarantee-text">必出油</span>
+                    </div>
+                </div>
+                
+                <div class="price-column" style="background: linear-gradient(135deg, rgba(40, 0, 40, 0.3), rgba(22, 27, 37, 0.8)); border-color: #660066;">
+                    <div class="price-item">
+                        <span class="price-tag special-price">5200</span>
+                        <span class="guarantee-text">沒出心保 6888w</span>
+                    </div>
+                    <div class="price-item">
+                        <span class="price-tag special-price">40000</span>
+                        <span class="guarantee-text">必出心</span>
+                    </div>
+                    <div class="price-item">
+                        <span class="price-tag special-price">90000</span>
+                        <span class="guarantee-text">沒出心保 10888w</span>
+                    </div>
+                    <div class="price-item">
+                        <span class="price-tag special-price">130000</span>
+                        <span class="guarantee-text">必出淚保</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="note-box warning-box">
+            <strong>⚠️ 賭約規則：</strong> 下訂後不可反悔或故意卡保底，發現直接結單
+        </div>
+
+        <div class="page-footer">
+            <strong>賭約精神：</strong> 挑戰極限，信譽為本
+        </div>
+    </div>
+
+    <!-- 第3頁：娛樂玩法 -->
+    <div class="page">
+        <div class="page-corner corner-tl"></div>
+        <div class="page-corner corner-tr"></div>
+        <div class="page-corner corner-bl"></div>
+        <div class="page-corner corner-br"></div>
+
+        <div class="header">
+            <div class="delta-title">娛樂玩法</div>
+            <div class="page-subtitle">牛角單 / 自力根生</div>
+        </div>
+
+        <div class="price-grid">
+            <!-- 牛角單 -->
+            <div class="price-column" style="background: linear-gradient(135deg, rgba(0, 40, 40, 0.3), rgba(22, 27, 37, 0.8)); border-color: #006666;">
+                <div class="section-title">
+                    <span>牛角單</span>
+                </div>
+
+                <div class="price-item">
+                    <span class="price-tag" style="color: #00ffff; border-color: #00ffff;">1088</span>
+                    <span class="guarantee-text">保底 800w</span>
+                </div>
+
+                <div class="note-box info-box">
+                    <strong>※ 額外加成：</strong> 一個牛角額外加 50w (無上限)
+                </div>
+            </div>
+
+            <!-- 自力根生 -->
+            <div class="price-column" style="background: linear-gradient(135deg, rgba(0, 40, 40, 0.3), rgba(22, 27, 37, 0.8)); border-color: #006666;">
+                <div class="section-title">
+                    <span>自力根生</span>
+                </div>
+
+                <div class="price-item">
+                    <span class="price-tag" style="color: #00ffff; border-color: #00ffff;">1000</span>
+                    <span class="guarantee-text">初始保底 500w</span>
+                </div>
+
+                <div class="note-box">
+                    <strong>※ 服務內容：</strong><br>
+                    1. 打手幫忙起裝<br>
+                    2. 一個人加 100w<br>
+                    3. 裝備會帶出去
+                </div>
+            </div>
+        </div>
+
+        <div class="note-box tip-box">
+            <strong>🎮 娛樂玩法特色：</strong> 趣味性高，規則彈性大
+        </div>
+
+        <div class="page-footer">
+            <strong>娛樂精神：</strong> 享受過程，挑戰自我
+        </div>
+    </div>
+
+    <!-- 第4頁：娛樂陪玩 -->
+    <div class="page">
+        <div class="page-corner corner-tl"></div>
+        <div class="page-corner corner-tr"></div>
+        <div class="page-corner corner-bl"></div>
+        <div class="page-corner corner-br"></div>
+
+        <div class="header">
+            <div class="delta-title">娛樂陪玩服務</div>
+            <div class="page-subtitle">專業陪玩師團隊</div>
+        </div>
+
+        <!-- 陪玩價格表 -->
+        <table class="peipei-table">
+            <thead>
+                <tr>
+                    <th colspan="3">基礎陪玩服務</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="male-bg">
+                    <td class="gender-title">👨 男陪玩師</td>
+                    <td>
+                        <div style="color: #66b3ff; font-weight: bold; font-size: 1.2rem;">娛樂陪玩</div>
+                        <div class="peipei-price">250/小時</div>
+                        <div style="color: #ff9999; font-size: 0.9rem;">輕鬆聊天娛樂局</div>
+                    </td>
+                    <td>
+                        <div style="color: #66b3ff; font-weight: bold; font-size: 1.2rem;">技術陪玩</div>
+                        <div class="peipei-price">450/小時</div>
+                        <div style="color: #ff9999; font-size: 0.9rem;">戰術指導技術局</div>
+                    </td>
+                </tr>
+                <tr class="female-bg">
+                    <td class="gender-title">👩 女陪玩師</td>
+                    <td>
+                        <div style="color: #66b3ff; font-weight: bold; font-size: 1.2rem;">娛樂陪玩</div>
+                        <div class="peipei-price">350/小時</div>
+                        <div style="color: #ff9999; font-size: 0.9rem;">甜蜜互動娛樂局</div>
+                    </td>
+                    <td>
+                        <div style="color: #66b3ff; font-weight: bold; font-size: 1.2rem;">技術陪玩</div>
+                        <div class="peipei-price">550/小時</div>
+                        <div style="color: #ff9999; font-size: 0.9rem;">專業指導技術局</div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div style="text-align: center; color: #ff9999; margin: 15px 0; font-size: 0.95rem;">
+            ⚠️ 注意：以上服務皆不保證擊殺數（不包得吃）
+        </div>
+
+        <!-- 時長優惠 -->
+        <div class="duration-section">
+            <div class="duration-title">⏰ 時長優惠方案</div>
+            <div class="duration-grid">
+                <div class="duration-item">
+                    <div class="duration-name">男陪玩 3小時套餐</div>
+                    <div class="duration-price">娛樂：700元</div>
+                    <div class="duration-price">技術：1200元</div>
+                </div>
+                <div class="duration-item">
+                    <div class="duration-name">男陪玩 5小時套餐</div>
+                    <div class="duration-price">娛樂：1100元</div>
+                    <div class="duration-price">技術：2000元</div>
+                </div>
+                <div class="duration-item">
+                    <div class="duration-name">女陪玩 3小時套餐</div>
+                    <div class="duration-price">娛樂：1000元</div>
+                    <div class="duration-price">技術：1500元</div>
+                </div>
+                <div class="duration-item">
+                    <div class="duration-name">女陪玩 5小時套餐</div>
+                    <div class="duration-price">娛樂：1600元</div>
+                    <div class="duration-price">技術：2500元</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 優惠區 -->
+        <div class="discount-section">
+            <div class="discount-title">🎁 新客專屬優惠</div>
+            <div style="color: #ccffcc; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+                <div>✨ 首次體驗享9折</div>
+                <div>✨ 推薦朋友各得100元券</div>
+                <div>✨ 累計10小時送1小時</div>
+                <div>✨ 生日當月享8折</div>
+            </div>
+        </div>
+
+        <!-- 規則區 -->
+        <div class="rules-section">
+            <div class="rules-title">📋 服務規則</div>
+            <ul class="rules-list">
+                <li>需提前1小時預約，預付50%訂金</li>
+                <li>服務開始後10分鐘內可取消</li>
+                <li>遊戲中請保持禮貌，禁止言語騷擾</li>
+                <li>遲到15分鐘以上視同取消</li>
+            </ul>
+        </div>
+
+        <div class="page-footer">
+            <div>📞 預約請洽官方LINE客服</div>
+            <div style="margin-top: 5px; color: #ff6600;">服務時間：每日 10:00 - 02:00</div>
+        </div>
+    </div>
+
+    <!-- 第5頁：規則條款 -->
+    <div class="page">
+        <div class="page-corner corner-tl"></div>
+        <div class="page-corner corner-tr"></div>
+        <div class="page-corner corner-bl"></div>
+        <div class="page-corner corner-br"></div>
+
+        <div class="header">
+            <div class="delta-title">服務規則條款</div>
+            <div class="page-subtitle">請仔細閱讀並遵守以下規則</div>
+        </div>
+
+        <!-- 基本規則 -->
+        <div class="service-section">
+            <div class="section-title">
+                <span>基本規則</span>
+            </div>
+
+            <div class="price-column">
+                <ul class="rules-list">
+                    <li><strong>下單確認：</strong> 下單前請確認需求及價格，下單後10分鐘內可取消</li>
+                    <li><strong>錄影存證：</strong> 護航期間打手全程錄影，建議老闆也錄屏</li>
+                    <li><strong>配合指令：</strong> 任務開始請配合打手行動，如不配合打手有權結單</li>
+                    <li><strong>聯繫規範：</strong> 結束護航請勿遊戲內私下索要打手聯絡方式</li>
+                    <li><strong>官方渠道：</strong> 所有訂單一律透過官方 LINE</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 賭約單特別規則 -->
+        <div class="service-section">
+            <div class="section-title">
+                <span>賭約單特別規則</span>
+            </div>
+
+            <div class="price-column">
+                <ul class="rules-list">
+                    <li><strong>不可反悔：</strong> 賭約單下訂後不可反悔或故意卡保底</li>
+                    <li><strong>合約精神：</strong> 賭約內容不可更動及耍賴</li>
+                    <li><strong>禁止情勒：</strong> 不可私下聯繫打手情勒求吃多點</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 重要提醒 -->
+        <div class="service-section">
+            <div class="section-title">
+                <span>重要提醒</span>
+            </div>
+
+            <div class="price-grid">
+                <div class="price-column">
+                    <div class="note-box warning-box">
+                        <strong>⚠️ 風險告知：</strong><br><br>
+                        1. 遊戲帳號安全由老闆自行負責<br>
+                        2. 服務過程中如遇遊戲官方封號，責任自負<br>
+                        3. 請勿將帳號密碼交給非官方人員<br>
+                        4. 交易請透過官方渠道，避免詐騙
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="page-footer">
+            <strong>最終解釋權：</strong> 本公司保留對上述規則的最終解釋權及修改權
+        </div>
+    </div>
+
+    <!-- 最終分隔線 -->
+    <div style="text-align: center; margin: 40px 0; color: #ff6600; font-size: 1.2rem;">
+        ⚡ 三角洲行動專屬服務 ⚡
+    </div>
+</body>
+</html>
