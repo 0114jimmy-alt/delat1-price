@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>護航成果圖生成器</title>
+    <title>三角洲行動 · 戰術護航海報</title>
     <style>
         * {
             margin: 0;
@@ -11,297 +11,366 @@
             box-sizing: border-box;
         }
         body {
-            background: #1a1a2e;
+            background: #0a0a0f;
             display: flex;
             flex-direction: column;
             align-items: center;
             padding: 30px 20px;
-            font-family: 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Segoe UI', 'PingFang TC', sans-serif;
         }
         .container {
-            max-width: 500px;
+            max-width: 520px;
             width: 100%;
-            background: #16213e;
+            background: #11121a;
             border-radius: 24px;
             padding: 24px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
-        }
-        h2 {
-            color: #e0e0e0;
-            font-weight: 400;
-            text-align: center;
-            margin-bottom: 18px;
-            font-size: 20px;
-            letter-spacing: 1px;
+            box-shadow: 0 0 40px rgba(200, 160, 60, 0.15);
+            border: 1px solid #3a3a2a;
         }
         .upload-area {
-            background: #0f3460;
-            border: 2px dashed #4a7cba;
-            border-radius: 16px;
-            padding: 30px 10px;
+            background: #1a1c28;
+            border: 2px dashed #5a7a3a;
+            border-radius: 14px;
+            padding: 16px;
             text-align: center;
-            color: #aac4e6;
+            color: #9aaa7a;
             cursor: pointer;
             transition: 0.3s;
-            margin-bottom: 20px;
+            margin-bottom: 14px;
         }
         .upload-area:hover {
-            background: #1a3f6a;
+            background: #222a30;
+            border-color: #8aaa5a;
         }
         .upload-area input {
             display: none;
         }
         .preview-box {
-            background: #0d1b2a;
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 16px;
+            background: #0d0e14;
+            border-radius: 14px;
+            padding: 10px;
+            border: 1px solid #2a3a2a;
         }
         #resultCanvas {
             width: 100%;
-            border-radius: 12px;
+            border-radius: 10px;
             display: block;
-            background: #0b1622;
         }
         .btn-group {
             display: flex;
             gap: 12px;
-            margin-top: 10px;
+            margin-top: 14px;
+            flex-wrap: wrap;
         }
         .btn {
             flex: 1;
+            min-width: 100px;
             padding: 14px 0;
             border: none;
             border-radius: 40px;
             font-weight: 700;
-            font-size: 16px;
+            font-size: 15px;
             cursor: pointer;
             transition: 0.2s;
-            color: white;
+            letter-spacing: 1px;
         }
-        .btn-primary {
-            background: linear-gradient(135deg, #f7971e, #ffd200);
-            color: #1a1a2e;
+        .btn-gold {
+            background: linear-gradient(135deg, #b8860b, #d4a030);
+            color: #0a0a0a;
         }
-        .btn-primary:hover {
+        .btn-gold:hover {
             transform: scale(1.02);
-            box-shadow: 0 0 20px #f7971e88;
+            box-shadow: 0 0 30px #b8860b66;
         }
-        .btn-secondary {
-            background: #2a3a5e;
+        .btn-dark {
+            background: #2a2a1a;
+            color: #bbaa77;
+            border: 1px solid #5a5a3a;
         }
-        .btn-secondary:hover {
-            background: #3a4e7a;
+        .btn-dark:hover {
+            background: #3a3a2a;
         }
         .footnote {
-            color: #6a7e9e;
+            color: #5a6a4a;
             text-align: center;
+            font-size: 11px;
+            margin-top: 14px;
+            letter-spacing: 0.5px;
+        }
+        .badge {
+            display: inline-block;
+            background: #2a2a1a;
+            color: #bbaa77;
+            padding: 4px 18px;
+            border-radius: 30px;
             font-size: 12px;
-            margin-top: 16px;
+            border: 1px solid #5a5a3a;
+            margin-bottom: 10px;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>🎯 護航成果圖生成</h2>
+    <div style="text-align:center; margin-bottom:6px;">
+        <span class="badge">⚔ 三角洲戰術護航 ⚔</span>
+    </div>
 
-    <div class="upload-area" id="uploadArea">
-        <span>📸 點擊上傳遊戲截圖</span>
-        <input type="file" id="fileInput" accept="image/*">
+    <div class="upload-area" id="mainUpload">
+        <span>📸 上傳遊戲成績截圖</span>
+        <input type="file" id="mainFile" accept="image/*">
     </div>
 
     <div class="preview-box">
-        <canvas id="resultCanvas" width="800" height="1200"></canvas>
+        <canvas id="resultCanvas" width="800" height="1300"></canvas>
     </div>
 
     <div class="btn-group">
-        <button class="btn btn-primary" id="downloadBtn">⬇ 下載成果圖</button>
-        <button class="btn btn-secondary" id="resetBtn">↺ 重置</button>
+        <button class="btn btn-gold" id="downloadBtn">⬇ 下載 PNG</button>
+        <button class="btn btn-dark" id="resetBtn">↺ 重置</button>
     </div>
-    <div class="footnote">上傳圖片後自動套用版型｜中間兩張圖替換為文字區塊</div>
+    <div class="footnote">三角洲風格 · 暗色戰術版 · 自動套用軍事元素</div>
 </div>
 
 <script>
     const canvas = document.getElementById('resultCanvas');
     const ctx = canvas.getContext('2d');
-    const fileInput = document.getElementById('fileInput');
-    const uploadArea = document.getElementById('uploadArea');
+    const w = 800, h = 1300;
+    let mainImg = null;
 
-    let uploadedImage = null;
-
-    // ---------- 繪製主圖 ----------
-    function drawFinalImage(img) {
-        const w = 800, h = 1200;
+    // ---------- 繪製三角洲軍事風海報 ----------
+    function drawPoster() {
         canvas.width = w;
         canvas.height = h;
 
-        // 背景
-        const grad = ctx.createLinearGradient(0, 0, 0, h);
-        grad.addColorStop(0, '#0b1a2e');
-        grad.addColorStop(1, '#14243e');
+        // ---- 背景：暗色迷彩感 ----
+        const grad = ctx.createRadialGradient(400, 200, 100, 400, 600, 900);
+        grad.addColorStop(0, '#1a2a1a');
+        grad.addColorStop(0.5, '#0d1a0d');
+        grad.addColorStop(1, '#050a05');
         ctx.fillStyle = grad;
         ctx.fillRect(0, 0, w, h);
 
-        let y = 30;
-
-        // ---- 1. 標題 ----
-        ctx.fillStyle = '#f5e6c8';
-        ctx.font = 'bold 32px "Segoe UI", "PingFang TC", sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText('🔰 三角洲行動 · 護航報告', w/2, y);
-        y += 20;
-        ctx.font = '18px "Segoe UI", "PingFang TC", sans-serif';
-        ctx.fillStyle = '#b8cce4';
-        ctx.fillText('巴克什密｜對戰 23.8 分鐘', w/2, y);
-        y += 50;
-
-        // ---- 2. 上傳的圖片（遊戲成績）----
-        if (img) {
-            const imgW = 700;
-            const ratio = img.width / img.height;
-            let imgH = imgW / ratio;
-            if (imgH > 400) { imgH = 400; }
-            const imgX = (w - imgW) / 2;
-            ctx.drawImage(img, imgX, y, imgW, imgH);
-            y += imgH + 30;
-        } else {
-            ctx.fillStyle = '#2a3a5e';
-            ctx.fillRect(50, y, 700, 260);
-            ctx.fillStyle = '#7a8aaa';
-            ctx.font = '20px sans-serif';
-            ctx.textAlign = 'center';
-            ctx.fillText('⬆ 請上傳遊戲截圖', w/2, y + 140);
-            y += 290;
+        // 戰術網格線
+        ctx.strokeStyle = 'rgba(60, 80, 40, 0.15)';
+        ctx.lineWidth = 1;
+        for (let i = 0; i < w; i += 40) {
+            ctx.beginPath();
+            ctx.moveTo(i, 0);
+            ctx.lineTo(i, h);
+            ctx.stroke();
+        }
+        for (let i = 0; i < h; i += 40) {
+            ctx.beginPath();
+            ctx.moveTo(0, i);
+            ctx.lineTo(w, i);
+            ctx.stroke();
         }
 
-        // ---- 3. 中間文字區塊（取代兩張圖）----
-        const boxX = 50, boxW = 700;
-        // 半透明底框
-        ctx.fillStyle = 'rgba(20, 40, 70, 0.85)';
-        ctx.shadowColor = '#2a6a9a';
-        ctx.shadowBlur = 20;
-        ctx.beginPath();
-        ctx.roundRect(boxX, y, boxW, 240, 16);
-        ctx.fill();
-        ctx.shadowBlur = 0;
-
-        // 標題
-        ctx.fillStyle = '#ffd966';
-        ctx.font = 'bold 26px "Segoe UI", "PingFang TC", sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText('🛡️ 專業護航服務內容', w/2, y + 44);
-        
-        // 項目
-        const items = [
-            '🔹 專業護航 · 安全撤離', 
-            '🔹 高價值物資搜集', 
-            '🔹 緊急救援與復活', 
-            '🔹 最佳路線規劃', 
-            '🔹 清場效率提升 · 生存率提高'
-        ];
-        ctx.font = '20px "Segoe UI", "PingFang TC", sans-serif';
-        ctx.fillStyle = '#d4e2f5';
-        ctx.textAlign = 'left';
-        let itemY = y + 84;
-        items.forEach((txt) => {
-            ctx.fillText(txt, boxX + 40, itemY);
-            itemY += 34;
+        // 四角戰術標記
+        const corners = [[20,20], [780,20], [20,1280], [780,1280]];
+        ctx.strokeStyle = '#8aaa5a';
+        ctx.lineWidth = 3;
+        corners.forEach(([x,y]) => {
+            const d = 30;
+            ctx.beginPath();
+            if (x < 100) { ctx.moveTo(x+d, y); ctx.lineTo(x, y); ctx.lineTo(x, y+d); }
+            else { ctx.moveTo(x-d, y); ctx.lineTo(x, y); ctx.lineTo(x, y+d); }
+            ctx.stroke();
+            ctx.beginPath();
+            if (x < 100) { ctx.moveTo(x+d, y+120); ctx.lineTo(x, y+120); ctx.lineTo(x, y+120-d); }
+            else { ctx.moveTo(x-d, y+120); ctx.lineTo(x, y+120); ctx.lineTo(x, y+120-d); }
+            ctx.stroke();
         });
-        y += 270;
 
-        // ---- 4. 客戶回饋對話框 ----
-        ctx.fillStyle = 'rgba(10, 25, 45, 0.9)';
-        ctx.shadowBlur = 10;
-        ctx.shadowColor = '#1a4a7a';
-        ctx.beginPath();
-        ctx.roundRect(50, y, 700, 130, 14);
-        ctx.fill();
-        ctx.shadowBlur = 0;
+        let y = 50;
 
-        ctx.fillStyle = '#c8daf5';
-        ctx.font = '18px "Segoe UI", "PingFang TC", sans-serif';
-        ctx.textAlign = 'left';
-        ctx.fillText('💬 客戶回饋', 70, y + 34);
-        ctx.fillStyle = '#f0e6d0';
-        ctx.font = '20px "Segoe UI", "PingFang TC", sans-serif';
-        ctx.fillText('「玩得開心喔 感恩！」', 70, y + 76);
-        ctx.fillStyle = '#aab8d0';
-        ctx.font = '16px sans-serif';
-        ctx.fillText('—— 真實客戶評價', 70, y + 108);
-        y += 160;
-
-        // ---- 5. 底部品牌 ----
-        ctx.fillStyle = '#e6d8b8';
-        ctx.font = 'bold 22px "Segoe UI", "PingFang TC", sans-serif';
+        // ---- 標題區 ----
         ctx.textAlign = 'center';
-        ctx.fillText('真實報 · 真實好 · 專業團隊 · 值得信賴', w/2, y + 20);
-        y += 50;
-        ctx.fillStyle = '#6a8aaa';
-        ctx.font = '16px sans-serif';
-        ctx.fillText('期待下次與您一起出發！', w/2, y + 10);
+        // 徽章
+        ctx.font = '42px "Segoe UI", "PingFang TC", sans-serif';
+        ctx.fillStyle = '#d4c08a';
+        ctx.fillText('⚔ 三角洲行動 ⚔', w/2, y);
+        y += 10;
+        ctx.font = '14px "Segoe UI", "PingFang TC", sans-serif';
+        ctx.fillStyle = '#7a9a5a';
+        ctx.fillText('— 戰術護航報告 —', w/2, y+20);
+        y += 60;
 
-        // 小裝飾線
-        ctx.strokeStyle = '#ffd96666';
+        // 分隔線
+        ctx.strokeStyle = '#5a7a3a';
         ctx.lineWidth = 2;
         ctx.beginPath();
-        ctx.moveTo(100, y + 40);
-        ctx.lineTo(700, y + 40);
+        ctx.moveTo(60, y);
+        ctx.lineTo(740, y);
         ctx.stroke();
+        y += 30;
+
+        // ---- 主圖（遊戲成績） ----
+        if (mainImg) {
+            const imgW = 700;
+            const ratio = mainImg.width / mainImg.height;
+            let imgH = imgW / ratio;
+            if (imgH > 380) imgH = 380;
+            const imgX = (w - imgW) / 2;
+            // 外發光邊框
+            ctx.shadowColor = '#8aaa5a';
+            ctx.shadowBlur = 25;
+            ctx.drawImage(mainImg, imgX, y, imgW, imgH);
+            ctx.shadowBlur = 0;
+            y += imgH + 30;
+        } else {
+            ctx.fillStyle = '#1a2218';
+            ctx.fillRect(60, y, 680, 200);
+            ctx.fillStyle = '#5a7a4a';
+            ctx.font = '20px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('⬆ 上傳遊戲截圖', w/2, y + 100);
+            y += 230;
+        }
+
+        // ---- 服務項目（軍事風卡片） ----
+        const cardY = y;
+        ctx.fillStyle = 'rgba(20, 30, 18, 0.92)';
+        ctx.shadowColor = '#3a5a2a';
+        ctx.shadowBlur = 15;
+        ctx.beginPath();
+        ctx.roundRect(40, cardY, 720, 260, 12);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+        ctx.strokeStyle = '#5a7a3a';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.roundRect(40, cardY, 720, 260, 12);
+        ctx.stroke();
+
+        ctx.fillStyle = '#d4c08a';
+        ctx.font = 'bold 24px "Segoe UI", "PingFang TC", sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('🛡️ 護航服務項目', w/2, cardY + 40);
+
+        const items = [
+            '🔹 安全撤離保障', '🔹 高價值物資搜集',
+            '🔹 專業火力掩護', '🔹 緊急救援復活',
+            '🔹 最佳路線規劃', '🔹 清場效率提升'
+        ];
+        ctx.font = '19px "Segoe UI", "PingFang TC", sans-serif';
+        ctx.fillStyle = '#b0c89a';
+        ctx.textAlign = 'left';
+        let ix = 70, iy = cardY + 82;
+        items.forEach((txt, idx) => {
+            if (idx === 3) { ix = 70; iy += 44; }
+            ctx.fillText(txt, ix, iy);
+            ix += 230;
+        });
+        y = cardY + 290;
+
+        // ---- 客戶回饋 ----
+        ctx.fillStyle = 'rgba(10, 18, 10, 0.9)';
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = '#2a4a1a';
+        ctx.beginPath();
+        ctx.roundRect(50, y, 700, 120, 10);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+        ctx.strokeStyle = '#4a6a3a';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.roundRect(50, y, 700, 120, 10);
+        ctx.stroke();
+
+        ctx.fillStyle = '#c8d8b0';
+        ctx.font = '18px "Segoe UI", "PingFang TC", sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText('💬 客戶真實反饋', 70, y + 34);
+        ctx.fillStyle = '#e8ddc0';
+        ctx.font = '22px "Segoe UI", "PingFang TC", sans-serif';
+        ctx.fillText('「玩得開心喔 感恩！」', 70, y + 76);
+        ctx.fillStyle = '#8aaa7a';
+        ctx.font = '15px sans-serif';
+        ctx.fillText('★★★★★ 真實評價', 70, y + 106);
+        y += 150;
+
+        // ---- 底部品牌（戰術風格） ----
+        ctx.fillStyle = '#b0a87a';
+        ctx.font = 'bold 20px "Segoe UI", "PingFang TC", sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('真實報 · 真實好 · 專業團隊 · 值得信賴', w/2, y + 16);
+        y += 46;
+        ctx.fillStyle = '#6a8a5a';
+        ctx.font = '18px "Segoe UI", "PingFang TC", sans-serif';
+        ctx.fillText('期待下次與您一起出發！', w/2, y + 6);
+
+        // 底部戰術條
+        ctx.fillStyle = '#2a3a1a';
+        ctx.fillRect(0, h-12, w, 12);
+        ctx.fillStyle = '#5a7a3a';
+        ctx.fillRect(0, h-12, 160, 4);
+        ctx.fillRect(w-160, h-12, 160, 4);
+
+        // 小標
+        ctx.fillStyle = '#3a5a2a';
+        ctx.font = '11px sans-serif';
+        ctx.textAlign = 'right';
+        ctx.fillText('DELTA FORCE · TACTICAL', w-20, h-22);
+        ctx.textAlign = 'left';
+        ctx.fillText('⚔ 戰術護航', 20, h-22);
     }
 
-    // 工具：canvas roundRect
+    // 工具
     CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
-        if (w < 2 * r) r = w / 2;
-        if (h < 2 * r) r = h / 2;
-        this.moveTo(x + r, y);
-        this.lineTo(x + w - r, y);
-        this.quadraticCurveTo(x + w, y, x + w, y + r);
-        this.lineTo(x + w, y + h - r);
-        this.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-        this.lineTo(x + r, y + h);
-        this.quadraticCurveTo(x, y + h, x, y + h - r);
-        this.lineTo(x, y + r);
-        this.quadraticCurveTo(x, y, x + r, y);
+        if (w < 2*r) r = w/2;
+        if (h < 2*r) r = h/2;
+        this.moveTo(x+r, y);
+        this.lineTo(x+w-r, y);
+        this.quadraticCurveTo(x+w, y, x+w, y+r);
+        this.lineTo(x+w, y+h-r);
+        this.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
+        this.lineTo(x+r, y+h);
+        this.quadraticCurveTo(x, y+h, x, y+h-r);
+        this.lineTo(x, y+r);
+        this.quadraticCurveTo(x, y, x+r, y);
         this.closePath();
         return this;
     };
 
-    // ---------- 上傳事件 ----------
-    uploadArea.addEventListener('click', () => fileInput.click());
-
-    fileInput.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
+    function loadImage(file, cb) {
+        if (!file) { cb(null); return; }
         const reader = new FileReader();
-        reader.onload = (ev) => {
+        reader.onload = (e) => {
             const img = new Image();
-            img.onload = () => {
-                uploadedImage = img;
-                drawFinalImage(img);
-            };
-            img.src = ev.target.result;
+            img.onload = () => cb(img);
+            img.src = e.target.result;
         };
         reader.readAsDataURL(file);
+    }
+
+    function update() {
+        drawPoster();
+    }
+
+    // ---- 事件 ----
+    document.getElementById('mainUpload').addEventListener('click', () => document.getElementById('mainFile').click());
+    document.getElementById('mainFile').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        loadImage(file, (img) => { mainImg = img; update(); });
     });
 
-    // 下載
     document.getElementById('downloadBtn').addEventListener('click', () => {
         const link = document.createElement('a');
-        link.download = '護航成果圖.png';
+        link.download = '三角洲護航海報.png';
         link.href = canvas.toDataURL('image/png');
         link.click();
     });
 
-    // 重置
     document.getElementById('resetBtn').addEventListener('click', () => {
-        uploadedImage = null;
-        fileInput.value = '';
-        drawFinalImage(null);
+        mainImg = null;
+        document.getElementById('mainFile').value = '';
+        update();
     });
 
-    // 初始繪製（無圖）
-    drawFinalImage(null);
+    update();
 </script>
 
 </body>
