@@ -3,419 +3,311 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>三角洲戰術護航 · 全新版型</title>
+    <title>俱樂部專業點單系統</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            background: #07080a;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 25px 15px;
-            font-family: 'PingFang TC', 'Segoe UI', 'Arial', sans-serif;
+        * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background: #f0f4f9; margin: 0; padding: 16px; }
+        .app { max-width: 800px; margin: 0 auto; }
+        
+        /* 頁籤切換 */
+        .tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+        .tab-btn {
+            flex: 1; min-width: 100px; padding: 12px; border: none;
+            border-radius: 40px; font-weight: 700; font-size: 14px;
+            background: white; color: #555; cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06); transition: 0.2s;
         }
-        .container {
-            max-width: 520px;
-            width: 100%;
-            background: #0d0e12;
-            border-radius: 22px;
-            padding: 22px;
-            border: 1px solid #2a2a1a;
-            box-shadow: 0 0 60px rgba(180, 150, 50, 0.05);
+        .tab-btn.active { background: #1a2b3c; color: white; box-shadow: 0 4px 12px rgba(26,43,60,0.3); }
+        .tab-btn:hover { transform: translateY(-2px); }
+        .page { display: none; }
+        .page.active { display: block; }
+
+        /* 卡片 */
+        .card {
+            background: white; border-radius: 24px; padding: 28px 24px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
         }
-        .upload-area {
-            background: #14151c;
-            border: 2px dashed #3a4a2a;
-            border-radius: 14px;
-            padding: 16px;
-            text-align: center;
-            color: #7a8a5a;
-            cursor: pointer;
-            transition: 0.3s;
-            margin-bottom: 14px;
-            font-size: 14px;
+        h2 { margin-top: 0; color: #1a2b3c; border-left: 5px solid #2a7de1; padding-left: 15px; }
+        .field { margin-bottom: 18px; }
+        label { display: block; font-weight: 600; font-size: 14px; color: #333; margin-bottom: 5px; }
+        label .required { color: #e74c3c; }
+        input, select, textarea {
+            width: 100%; padding: 12px 14px; border: 1px solid #d0d7de;
+            border-radius: 12px; font-size: 15px; transition: 0.2s;
+            background: white;
         }
-        .upload-area:hover { background: #1a1e1a; border-color: #8aaa5a; }
-        .upload-area input { display: none; }
-        .preview-box {
-            background: #0a0a0e;
-            border-radius: 14px;
-            padding: 8px;
-            border: 1px solid #1a2a1a;
+        input:focus, select:focus, textarea:focus {
+            border-color: #2a7de1; outline: none; box-shadow: 0 0 0 3px rgba(42,125,225,0.15);
         }
-        #resultCanvas {
-            width: 100%;
-            border-radius: 10px;
-            display: block;
+        textarea { min-height: 60px; resize: vertical; }
+        .btn-primary {
+            width: 100%; padding: 14px; background: #2a7de1; color: white;
+            border: none; border-radius: 40px; font-size: 17px; font-weight: 700;
+            cursor: pointer; transition: 0.2s;
         }
-        .btn-group {
-            display: flex;
-            gap: 12px;
-            margin-top: 14px;
+        .btn-primary:hover { background: #1a5fb4; transform: scale(0.98); }
+        .btn-danger {
+            background: #e74c3c; padding: 8px 16px; border: none;
+            border-radius: 30px; color: white; font-weight: 600; cursor: pointer;
         }
-        .btn {
-            flex: 1;
-            padding: 14px 0;
-            border: none;
-            border-radius: 40px;
-            font-weight: 700;
-            font-size: 15px;
-            cursor: pointer;
-            transition: 0.2s;
-            letter-spacing: 1px;
+        .btn-danger:hover { background: #c0392b; }
+
+        /* 表格 */
+        table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        th { background: #1a2b3c; color: white; padding: 12px 10px; text-align: left; }
+        td { padding: 10px; border-bottom: 1px solid #edf2f7; }
+        .badge {
+            background: #e1f0fa; color: #0a558c; padding: 3px 14px;
+            border-radius: 30px; font-size: 12px; font-weight: 700;
         }
-        .btn-gold {
-            background: linear-gradient(135deg, #a08030, #d4b050);
-            color: #0a0a0a;
+        .empty { text-align: center; color: #999; padding: 40px 0; }
+
+        /* 手機卡片列表 */
+        .order-card {
+            background: white; border-radius: 16px; padding: 16px 18px;
+            margin-bottom: 12px; border-left: 5px solid #2a7de1;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
-        .btn-gold:hover { transform: scale(1.02); box-shadow: 0 0 30px #c9a84c44; }
-        .btn-dark {
-            background: #1a1a1a;
-            color: #8a8a7a;
-            border: 1px solid #3a3a2a;
+        .order-card .row { display: flex; justify-content: space-between; margin-bottom: 4px; }
+        .order-card .label { color: #6b7a8a; font-size: 13px; font-weight: 600; }
+        .order-card .value { font-weight: 600; color: #0b1e2e; }
+        .player-tag {
+            background: #d4e2fc; padding: 2px 14px; border-radius: 30px;
+            font-size: 13px; font-weight: 700; color: #1a4f8b;
         }
-        .btn-dark:hover { background: #2a2a22; }
-        .footnote {
-            color: #4a4a3a;
-            text-align: center;
-            font-size: 10px;
-            margin-top: 12px;
-            letter-spacing: 1px;
-        }
-        .badge-top {
-            text-align: center;
-            color: #6a7a4a;
-            font-size: 11px;
-            letter-spacing: 3px;
-            margin-bottom: 10px;
-            border-bottom: 1px solid #1a2a1a;
-            padding-bottom: 10px;
+
+        @media (max-width: 600px) {
+            .card { padding: 18px 16px; }
+            .tabs .tab-btn { font-size: 12px; min-width: 70px; padding: 10px; }
+            table, thead, tbody, th, td, tr { display: block; }
+            th { display: none; }
+            td { padding: 6px 10px; padding-left: 40%; position: relative; border: none; }
+            td::before {
+                content: attr(data-label); position: absolute; left: 10px;
+                font-weight: 700; color: #1a2b3c; width: 35%;
+            }
         }
     </style>
 </head>
 <body>
-
-<div class="container">
-    <div class="badge-top">⚔ 三角洲戰術護航 · 自動合成 ⚔</div>
-
-    <div class="upload-area" id="mainUpload">
-        <span>📸 點擊上傳遊戲截圖</span>
-        <input type="file" id="mainFile" accept="image/*">
+<div class="app">
+    <!-- 頁籤 -->
+    <div class="tabs">
+        <button class="tab-btn active" data-page="page1">📝 點單</button>
+        <button class="tab-btn" data-page="page2">📊 總表</button>
+        <button class="tab-btn" data-page="page3">📱 手機版</button>
     </div>
 
-    <div class="preview-box">
-        <canvas id="resultCanvas" width="800" height="1400"></canvas>
+    <!-- ====== 頁面一：點單表單 ====== -->
+    <div id="page1" class="page active">
+        <div class="card">
+            <h2>📋 新增點單</h2>
+            <form id="orderForm">
+                <div class="field">
+                    <label>客戶姓名 <span class="required">*</span></label>
+                    <input type="text" id="clientName" placeholder="請輸入全名" required>
+                </div>
+                <div class="field">
+                    <label>聯絡資訊 <span class="required">*</span></label>
+                    <input type="text" id="contact" placeholder="手機 / Line ID">
+                </div>
+                <div class="field">
+                    <label>點單時間</label>
+                    <input type="datetime-local" id="orderTime" readonly style="background:#f8f9fa;">
+                </div>
+                <div class="field">
+                    <label>指定打手 <span class="required">*</span></label>
+                    <select id="player" required>
+                        <option value="">— 請選擇 —</option>
+                        <option value="阿豪">阿豪</option>
+                        <option value="小陳">小陳</option>
+                        <option value="大衛">大衛</option>
+                        <option value="Mike">Mike</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>補充說明</label>
+                    <textarea id="remark" placeholder="特殊需求、備註…"></textarea>
+                </div>
+                <div class="field">
+                    <label>結單時間</label>
+                    <input type="datetime-local" id="closeTime">
+                </div>
+                <div class="field">
+                    <label>結單截圖</label>
+                    <input type="file" id="screenshot" accept="image/*">
+                </div>
+                <button type="submit" class="btn-primary">✅ 送出點單</button>
+            </form>
+        </div>
     </div>
 
-    <div class="btn-group">
-        <button class="btn btn-gold" id="downloadBtn">⬇ 下載 PNG</button>
-        <button class="btn btn-dark" id="resetBtn">↺ 重置</button>
+    <!-- ====== 頁面二：總表 ====== -->
+    <div id="page2" class="page">
+        <div class="card">
+            <h2>📊 所有紀錄 <span id="countDisplay" style="font-size:14px;color:#888;font-weight:400;"></span></h2>
+            <div style="overflow-x:auto;">
+                <table>
+                    <thead><tr>
+                        <th>客戶</th><th>聯絡</th><th>點單時間</th><th>打手</th><th>補充</th><th>結單時間</th><th>截圖</th>
+                    </tr></thead>
+                    <tbody id="tableBody">
+                        <tr><td colspan="7" class="empty">目前尚無資料，請先新增點單</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div style="margin-top:16px; display:flex; gap:12px; flex-wrap:wrap;">
+                <button class="btn-danger" onclick="clearAll()">🗑 清除全部</button>
+                <button class="btn-primary" style="width:auto; padding:8px 24px;" onclick="exportCSV()">📥 匯出 CSV</button>
+            </div>
+        </div>
     </div>
-    <div class="footnote">全新設計 · 保留所有原始元素 · 軍事風格</div>
+
+    <!-- ====== 頁面三：手機版 ====== -->
+    <div id="page3" class="page">
+        <div class="card">
+            <h2>📱 即時清單</h2>
+            <div id="mobileList">
+                <div class="empty">尚無資料</div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
-    const canvas = document.getElementById('resultCanvas');
-    const ctx = canvas.getContext('2d');
-    const w = 800, h = 1400;
-    let mainImg = null;
+// ====== 資料儲存 ======
+let orders = JSON.parse(localStorage.getItem('clubOrders')) || [];
 
-    function drawPoster() {
-        canvas.width = w;
-        canvas.height = h;
+// ====== 儲存 ======
+function save() {
+    localStorage.setItem('clubOrders', JSON.stringify(orders));
+    renderAll();
+}
 
-        // ===== 背景 =====
-        const grad = ctx.createRadialGradient(400, 300, 100, 400, 600, 1000);
-        grad.addColorStop(0, '#1a1e1a');
-        grad.addColorStop(0.5, '#0d0f0d');
-        grad.addColorStop(1, '#050605');
-        ctx.fillStyle = grad;
-        ctx.fillRect(0, 0, w, h);
+// ====== 設定現在時間 ======
+function setNow() {
+    const now = new Date();
+    const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+    document.getElementById('orderTime').value = local.toISOString().slice(0,16);
+}
+setNow();
 
-        // 戰術網格
-        ctx.strokeStyle = 'rgba(60, 80, 40, 0.07)';
-        ctx.lineWidth = 0.5;
-        for (let i = 0; i < w; i += 30) {
-            ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, h); ctx.stroke();
-        }
-        for (let i = 0; i < h; i += 30) {
-            ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(w, i); ctx.stroke();
-        }
-
-        // 四角戰術標記
-        ctx.strokeStyle = '#6a8a4a';
-        ctx.lineWidth = 2.5;
-        const corners = [[25,25], [775,25], [25,1375], [775,1375]];
-        corners.forEach(([x,y]) => {
-            const d = 28;
-            ctx.beginPath();
-            if (x < 100) { ctx.moveTo(x+d, y); ctx.lineTo(x, y); ctx.lineTo(x, y+d); }
-            else { ctx.moveTo(x-d, y); ctx.lineTo(x, y); ctx.lineTo(x, y+d); }
-            ctx.stroke();
-            ctx.beginPath();
-            if (x < 100) { ctx.moveTo(x+d, y+120); ctx.lineTo(x, y+120); ctx.lineTo(x, y+120-d); }
-            else { ctx.moveTo(x-d, y+120); ctx.lineTo(x, y+120); ctx.lineTo(x, y+120-d); }
-            ctx.stroke();
-        });
-
-        // 外框
-        ctx.strokeStyle = '#3a4a2a44';
-        ctx.lineWidth = 1;
-        ctx.strokeRect(30, 30, w-60, h-60);
-
-        let y = 55;
-
-        // ===== 標題區 =====
-        ctx.textAlign = 'center';
-        ctx.fillStyle = '#c9b070';
-        ctx.font = 'bold 40px "PingFang TC", "Segoe UI", sans-serif';
-        ctx.fillText('三角洲行動', w/2, y);
-        y += 38;
-        ctx.fillStyle = '#7a9a5a';
-        ctx.font = 'bold 18px "Arial", sans-serif';
-        ctx.fillText('DELTA FORCE', w/2, y);
-        y += 30;
-        ctx.fillStyle = '#e8d5a0';
-        ctx.font = '22px "PingFang TC", sans-serif';
-        ctx.fillText('鉑金II ｜ 護航任務完成', w/2, y);
-        y += 20;
-        ctx.fillStyle = '#8aaa7a';
-        ctx.font = '16px "PingFang TC", sans-serif';
-        ctx.fillText('✅ 撤離成功！ ｜ 巴克什密 ｜ 對局時間 23.8分鐘', w/2, y);
-        y += 16;
-        ctx.fillStyle = '#c9a84c';
-        ctx.font = '20px sans-serif';
-        ctx.fillText('★2  3151 (+75)', w/2, y);
-        y += 40;
-
-        // 分隔線
-        ctx.strokeStyle = '#4a6a3a55';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(50, y);
-        ctx.lineTo(750, y);
-        ctx.stroke();
-        y += 25;
-
-        // ===== 上傳的遊戲截圖 =====
-        if (mainImg) {
-            const imgW = 700;
-            const ratio = mainImg.width / mainImg.height;
-            let imgH = imgW / ratio;
-            if (imgH > 420) imgH = 420;
-            const imgX = (w - imgW) / 2;
-            ctx.shadowColor = '#6a8a4a66';
-            ctx.shadowBlur = 25;
-            ctx.drawImage(mainImg, imgX, y, imgW, imgH);
-            ctx.shadowBlur = 0;
-            y += imgH + 20;
-        } else {
-            ctx.fillStyle = '#141a14';
-            ctx.fillRect(50, y, 700, 240);
-            ctx.fillStyle = '#4a5a3a';
-            ctx.font = '20px "PingFang TC", sans-serif';
-            ctx.textAlign = 'center';
-            ctx.fillText('⬆ 上傳遊戲截圖', w/2, y + 120);
-            y += 260;
-        }
-
-        // ===== 詳細數據（仿原始排版） =====
-        ctx.textAlign = 'left';
-        ctx.fillStyle = '#b0c09a';
-        ctx.font = '16px "PingFang TC", sans-serif';
-        const dataItems = [
-            ['帶出價值', '758,093'],
-            ['擊殺探員', '4'],
-            ['其他', '3'],
-            ['救援/復活', '2/0'],
-            ['生存時長', '23.8分鐘'],
-            ['成就', '撤成功']
-        ];
-        let dx = 70, dy = y;
-        dataItems.forEach(([label, val]) => {
-            ctx.fillStyle = '#8a9a7a';
-            ctx.font = '14px "PingFang TC", sans-serif';
-            ctx.fillText(label, dx, dy);
-            ctx.fillStyle = '#e8ddc0';
-            ctx.font = 'bold 18px sans-serif';
-            ctx.fillText(val, dx + 90, dy);
-            dx += 160;
-            if (dx > 700) { dx = 70; dy += 30; }
-        });
-        y = dy + 35;
-
-        // ===== 玩家清單 =====
-        ctx.textAlign = 'left';
-        ctx.fillStyle = '#8a9a7a';
-        ctx.font = '14px "PingFang TC", sans-serif';
-        ctx.fillText('玩家清單', 70, y);
-        y += 22;
-        const players = [
-            ['理察斯利', '758,093', '4', '3', '2/0', '23.8分鐘', '撤成功'],
-            ['黑閃｜黑', '451,510', '1', '6', '0/0', '23.8分鐘', '撤成功'],
-            ['As°咋滴心餐', '12,932,813', '1', '0/0', '19.4分鐘', '']
-        ];
-        players.forEach((p, idx) => {
-            ctx.fillStyle = idx === 0 ? '#c9b070' : (idx === 1 ? '#aabb9a' : '#7a8a6a');
-            ctx.font = '14px "PingFang TC", sans-serif';
-            ctx.fillText(p[0], 70, y);
-            ctx.fillStyle = '#d4d4c0';
-            ctx.font = '13px sans-serif';
-            ctx.fillText(p[1], 210, y);
-            ctx.fillText(p[2], 320, y);
-            ctx.fillText(p[3] || '', 390, y);
-            ctx.fillText(p[4] || '', 440, y);
-            ctx.fillText(p[5] || '', 530, y);
-            if (p[6]) { ctx.fillStyle = '#6aaa4a'; ctx.fillText('✅', 680, y); }
-            y += 24;
-        });
-        y += 10;
-
-        // ===== 分隔線 =====
-        ctx.strokeStyle = '#4a6a3a55';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(50, y);
-        ctx.lineTo(750, y);
-        ctx.stroke();
-        y += 25;
-
-        // ===== 服務項目 =====
-        ctx.fillStyle = 'rgba(16, 22, 16, 0.92)';
-        ctx.shadowColor = '#3a5a2a44';
-        ctx.shadowBlur = 15;
-        ctx.beginPath();
-        ctx.roundRect(40, y, 720, 230, 12);
-        ctx.fill();
-        ctx.shadowBlur = 0;
-        ctx.strokeStyle = '#4a6a3a55';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.roundRect(40, y, 720, 230, 12);
-        ctx.stroke();
-
-        ctx.fillStyle = '#c9b070';
-        ctx.font = 'bold 20px "PingFang TC", sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText('我們提供的不只是撤離服務，更重視整體體驗', w/2, y + 34);
-
-        const services = [
-            '🔹 安全撤離保障', '🔹 高價值物資搜集',
-            '🔹 專業火力掩護', '🔹 緊急救援復活',
-            '🔹 最佳路線規劃', '🔹 清場效率提升'
-        ];
-        ctx.font = '17px "PingFang TC", sans-serif';
-        ctx.fillStyle = '#c8d8b0';
-        ctx.textAlign = 'left';
-        let sx = 70, sy = y + 72;
-        services.forEach((txt, idx) => {
-            if (idx === 3) { sx = 70; sy += 40; }
-            ctx.fillText(txt, sx, sy);
-            sx += 230;
-        });
-
-        ctx.fillStyle = '#8a9a7a';
-        ctx.font = '15px "PingFang TC", sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText('專業護航，降低翻車風險 ｜ 專注享受遊戲樂趣', w/2, y + 180);
-        y += 255;
-
-        // ===== 客戶回饋 =====
-        ctx.fillStyle = 'rgba(10, 14, 10, 0.92)';
-        ctx.shadowBlur = 10;
-        ctx.shadowColor = '#2a4a1a33';
-        ctx.beginPath();
-        ctx.roundRect(50, y, 700, 130, 10);
-        ctx.fill();
-        ctx.shadowBlur = 0;
-        ctx.strokeStyle = '#3a5a2a44';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.roundRect(50, y, 700, 130, 10);
-        ctx.stroke();
-
-        ctx.fillStyle = '#b0c09a';
-        ctx.font = '16px "PingFang TC", sans-serif';
-        ctx.textAlign = 'left';
-        ctx.fillText('💬 客戶真實回饋', 70, y + 28);
-        ctx.fillStyle = '#e8ddc0';
-        ctx.font = '19px "PingFang TC", sans-serif';
-        ctx.fillText('「玩得開心喔 感恩！」', 70, y + 62);
-        ctx.fillStyle = '#8a9a7a';
-        ctx.font = '14px sans-serif';
-        ctx.fillText('下午2:57 ｜ ★★★★★ 真實評價', 70, y + 94);
-        y += 160;
-
-        // ===== 底部品牌 =====
-        ctx.fillStyle = '#c9b070';
-        ctx.font = 'bold 20px "PingFang TC", sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText('真實報 · 真實好 · 專業團隊 · 值得信賴', w/2, y + 16);
-        y += 44;
-        ctx.fillStyle = '#8a9a7a';
-        ctx.font = '18px "PingFang TC", sans-serif';
-        ctx.fillText('期待下次與您一起出發！', w/2, y + 6);
-
-        // 底部戰術條
-        ctx.fillStyle = '#1a2a1a';
-        ctx.fillRect(0, h-14, w, 14);
-        ctx.fillStyle = '#4a6a3a';
-        ctx.fillRect(0, h-14, 140, 4);
-        ctx.fillRect(w-140, h-14, 140, 4);
-
-        ctx.fillStyle = '#3a4a2a';
-        ctx.font = '10px sans-serif';
-        ctx.textAlign = 'right';
-        ctx.fillText('DELTA FORCE · TACTICAL', w-20, h-3);
-        ctx.textAlign = 'left';
-        ctx.fillText('⚔ 戰術護航', 20, h-3);
+// ====== 新增訂單 ======
+document.getElementById('orderForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const client = document.getElementById('clientName').value.trim();
+    const contact = document.getElementById('contact').value.trim();
+    const player = document.getElementById('player').value;
+    const remark = document.getElementById('remark').value.trim();
+    const closeTime = document.getElementById('closeTime').value;
+    const fileInput = document.getElementById('screenshot');
+    let fileName = '';
+    if (fileInput.files.length > 0) {
+        fileName = fileInput.files[0].name;
     }
-
-    CanvasRenderingContext2D.prototype.roundRect = function(x,y,w,h,r) {
-        if (w<2*r) r=w/2; if (h<2*r) r=h/2;
-        this.moveTo(x+r,y); this.lineTo(x+w-r,y);
-        this.quadraticCurveTo(x+w,y,x+w,y+r);
-        this.lineTo(x+w,y+h-r);
-        this.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
-        this.lineTo(x+r,y+h);
-        this.quadraticCurveTo(x,y+h,x,y+h-r);
-        this.lineTo(x,y+r);
-        this.quadraticCurveTo(x,y,x+r,y);
-        this.closePath(); return this;
+    if (!client || !player) {
+        alert('請填寫客戶姓名與指定打手');
+        return;
+    }
+    const order = {
+        id: Date.now(),
+        client,
+        contact: contact || '—',
+        orderTime: document.getElementById('orderTime').value || new Date().toISOString().slice(0,16),
+        player,
+        remark: remark || '—',
+        closeTime: closeTime || '未結單',
+        screenshot: fileName || '未上傳'
     };
+    orders.unshift(order);
+    save();
+    this.reset();
+    setNow();
+    document.getElementById('closeTime').value = '';
+    alert('✅ 點單已送出！');
+});
 
-    function loadImage(file, cb) {
-        if (!file) { cb(null); return; }
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const img = new Image();
-            img.onload = () => cb(img);
-            img.src = e.target.result;
-        };
-        reader.readAsDataURL(file);
+// ====== 渲染全部 ======
+function renderAll() {
+    renderTable();
+    renderMobile();
+    document.getElementById('countDisplay').textContent = `（共 ${orders.length} 筆）`;
+}
+
+// ====== 渲染總表 ======
+function renderTable() {
+    const tbody = document.getElementById('tableBody');
+    if (orders.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="empty">目前尚無資料</td></tr>';
+        return;
     }
+    tbody.innerHTML = orders.map(o => `
+        <tr>
+            <td data-label="客戶">${o.client}</td>
+            <td data-label="聯絡">${o.contact}</td>
+            <td data-label="點單時間">${o.orderTime}</td>
+            <td data-label="打手"><span class="badge">${o.player}</span></td>
+            <td data-label="補充">${o.remark}</td>
+            <td data-label="結單時間">${o.closeTime}</td>
+            <td data-label="截圖">${o.screenshot}</td>
+        </tr>
+    `).join('');
+}
 
-    function update() { drawPoster(); }
+// ====== 渲染手機版 ======
+function renderMobile() {
+    const container = document.getElementById('mobileList');
+    if (orders.length === 0) {
+        container.innerHTML = '<div class="empty">尚無資料</div>';
+        return;
+    }
+    container.innerHTML = orders.map(o => `
+        <div class="order-card">
+            <div class="row"><span class="label">👤 客戶</span><span class="value">${o.client}</span></div>
+            <div class="row"><span class="label">📞 聯絡</span><span class="value">${o.contact}</span></div>
+            <div class="row"><span class="label">⏰ 點單</span><span class="value">${o.orderTime}</span></div>
+            <div class="row"><span class="label">🎯 打手</span><span class="player-tag">${o.player}</span></div>
+            <div class="row"><span class="label">📝 補充</span><span class="value" style="font-weight:400;">${o.remark}</span></div>
+            <hr style="margin:8px 0;border:0;border-top:1px dashed #ddd;">
+            <div class="row"><span class="label">🔚 結單</span><span class="value">${o.closeTime}</span></div>
+            <div class="row"><span class="label">🖼 截圖</span><span class="value" style="font-weight:400;font-size:13px;">${o.screenshot}</span></div>
+        </div>
+    `).join('');
+}
 
-    document.getElementById('mainUpload').addEventListener('click', () => document.getElementById('mainFile').click());
-    document.getElementById('mainFile').addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        loadImage(file, (img) => { mainImg = img; update(); });
-    });
-    document.getElementById('downloadBtn').addEventListener('click', () => {
-        const link = document.createElement('a');
-        link.download = '三角洲護航海報.png';
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-    });
-    document.getElementById('resetBtn').addEventListener('click', () => {
-        mainImg = null;
-        document.getElementById('mainFile').value = '';
-        update();
-    });
+// ====== 清除全部 ======
+function clearAll() {
+    if (confirm('確定要刪除所有紀錄嗎？')) {
+        orders = [];
+        save();
+    }
+}
 
-    update();
+// ====== 匯出 CSV ======
+function exportCSV() {
+    if (orders.length === 0) { alert('沒有資料可匯出'); return; }
+    const headers = ['客戶','聯絡','點單時間','打手','補充','結單時間','截圖'];
+    const rows = orders.map(o => [o.client, o.contact, o.orderTime, o.player, o.remark, o.closeTime, o.screenshot]);
+    let csv = headers.join(',') + '\n' + rows.map(r => r.join(',')).join('\n');
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `俱樂部紀錄_${new Date().toISOString().slice(0,10)}.csv`;
+    link.click();
+}
+
+// ====== 頁籤切換 ======
+document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(this.dataset.page).classList.add('active');
+    });
+});
+
+// ====== 初始化 ======
+renderAll();
 </script>
 </body>
 </html>
