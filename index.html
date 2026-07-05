@@ -3,31 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>俱樂部專業點單系統</title>
+    <title>俱樂部點單．接單系統</title>
     <style>
         * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
         body { background: #f0f4f9; margin: 0; padding: 16px; }
-        .app { max-width: 800px; margin: 0 auto; }
-        
-        /* 頁籤切換 */
-        .tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+        .app { max-width: 900px; margin: 0 auto; }
+
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
         .tab-btn {
-            flex: 1; min-width: 100px; padding: 12px; border: none;
-            border-radius: 40px; font-weight: 700; font-size: 14px;
+            flex: 1; min-width: 120px; padding: 14px 20px; border: none;
+            border-radius: 40px; font-weight: 700; font-size: 15px;
             background: white; color: #555; cursor: pointer;
             box-shadow: 0 2px 8px rgba(0,0,0,0.06); transition: 0.2s;
         }
         .tab-btn.active { background: #1a2b3c; color: white; box-shadow: 0 4px 12px rgba(26,43,60,0.3); }
         .tab-btn:hover { transform: translateY(-2px); }
+        .tab-btn .badge-count {
+            background: #e74c3c; color: white; border-radius: 30px;
+            padding: 1px 10px; font-size: 12px; margin-left: 6px;
+        }
         .page { display: none; }
         .page.active { display: block; }
 
-        /* 卡片 */
         .card {
             background: white; border-radius: 24px; padding: 28px 24px;
             box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
         }
-        h2 { margin-top: 0; color: #1a2b3c; border-left: 5px solid #2a7de1; padding-left: 15px; }
+        .card-title {
+            margin-top: 0; color: #1a2b3c; border-left: 5px solid #2a7de1;
+            padding-left: 15px; display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap;
+        }
         .field { margin-bottom: 18px; }
         label { display: block; font-weight: 600; font-size: 14px; color: #333; margin-bottom: 5px; }
         label .required { color: #e74c3c; }
@@ -46,46 +53,57 @@
             cursor: pointer; transition: 0.2s;
         }
         .btn-primary:hover { background: #1a5fb4; transform: scale(0.98); }
+        .btn-success {
+            padding: 8px 20px; background: #27ae60; color: white;
+            border: none; border-radius: 30px; font-weight: 700; cursor: pointer;
+            font-size: 14px; transition: 0.2s;
+        }
+        .btn-success:hover { background: #1e8449; }
         .btn-danger {
-            background: #e74c3c; padding: 8px 16px; border: none;
-            border-radius: 30px; color: white; font-weight: 600; cursor: pointer;
+            padding: 8px 16px; background: #e74c3c; color: white;
+            border: none; border-radius: 30px; font-weight: 600; cursor: pointer;
         }
         .btn-danger:hover { background: #c0392b; }
-
-        /* 表格 */
-        table { width: 100%; border-collapse: collapse; font-size: 14px; }
-        th { background: #1a2b3c; color: white; padding: 12px 10px; text-align: left; }
-        td { padding: 10px; border-bottom: 1px solid #edf2f7; }
-        .badge {
-            background: #e1f0fa; color: #0a558c; padding: 3px 14px;
-            border-radius: 30px; font-size: 12px; font-weight: 700;
+        .btn-outline {
+            padding: 8px 16px; background: transparent; color: #2a7de1;
+            border: 2px solid #2a7de1; border-radius: 30px; font-weight: 600; cursor: pointer;
         }
-        .empty { text-align: center; color: #999; padding: 40px 0; }
+        .btn-outline:hover { background: #2a7de1; color: white; }
 
-        /* 手機卡片列表 */
-        .order-card {
-            background: white; border-radius: 16px; padding: 16px 18px;
+        .order-item {
+            background: #f8fafc; border-radius: 16px; padding: 16px 20px;
             margin-bottom: 12px; border-left: 5px solid #2a7de1;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center;
         }
-        .order-card .row { display: flex; justify-content: space-between; margin-bottom: 4px; }
-        .order-card .label { color: #6b7a8a; font-size: 13px; font-weight: 600; }
-        .order-card .value { font-weight: 600; color: #0b1e2e; }
-        .player-tag {
-            background: #d4e2fc; padding: 2px 14px; border-radius: 30px;
-            font-size: 13px; font-weight: 700; color: #1a4f8b;
+        .order-item .info { flex: 2; min-width: 200px; }
+        .order-item .info .row { display: flex; gap: 16px; flex-wrap: wrap; font-size: 14px; margin-bottom: 4px; }
+        .order-item .info .label { color: #6b7a8a; font-weight: 600; }
+        .order-item .info .value { font-weight: 600; color: #0b1e2e; }
+        .order-item .actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+        
+        .tag-specified { background: #d4e2fc; color: #1a4f8b; padding: 2px 14px; border-radius: 30px; font-size: 12px; font-weight: 700; }
+        .tag-unspecified { background: #fef3c7; color: #92400e; padding: 2px 14px; border-radius: 30px; font-size: 12px; font-weight: 700; }
+        .tag-taken { background: #d1fae5; color: #065f46; padding: 2px 14px; border-radius: 30px; font-size: 12px; font-weight: 700; }
+        .tag-partial { background: #fef3c7; color: #92400e; padding: 2px 14px; border-radius: 30px; font-size: 12px; font-weight: 700; }
+
+        .status-badge { font-size: 12px; font-weight: 700; padding: 3px 14px; border-radius: 30px; }
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-taken { background: #d1fae5; color: #065f46; }
+
+        .section-title {
+            font-size: 18px; font-weight: 700; color: #1a2b3c;
+            margin: 20px 0 12px 0; padding-bottom: 8px; border-bottom: 2px solid #e8edf2;
         }
+        .empty { text-align: center; color: #999; padding: 30px 0; }
+
+        .double-select { display: flex; gap: 12px; flex-wrap: wrap; }
+        .double-select select { flex: 1; min-width: 120px; }
 
         @media (max-width: 600px) {
-            .card { padding: 18px 16px; }
-            .tabs .tab-btn { font-size: 12px; min-width: 70px; padding: 10px; }
-            table, thead, tbody, th, td, tr { display: block; }
-            th { display: none; }
-            td { padding: 6px 10px; padding-left: 40%; position: relative; border: none; }
-            td::before {
-                content: attr(data-label); position: absolute; left: 10px;
-                font-weight: 700; color: #1a2b3c; width: 35%;
-            }
+            .card { padding: 18px 14px; }
+            .order-item { flex-direction: column; align-items: stretch; gap: 12px; }
+            .order-item .actions { justify-content: flex-end; }
+            .double-select { flex-direction: column; }
         }
     </style>
 </head>
@@ -93,15 +111,16 @@
 <div class="app">
     <!-- 頁籤 -->
     <div class="tabs">
-        <button class="tab-btn active" data-page="page1">📝 點單</button>
-        <button class="tab-btn" data-page="page2">📊 總表</button>
-        <button class="tab-btn" data-page="page3">📱 手機版</button>
+        <button class="tab-btn active" data-page="pageClient">📝 客戶點單</button>
+        <button class="tab-btn" data-page="pagePlayer">🎯 打手接單 <span id="pendingCount" class="badge-count">0</span></button>
     </div>
 
-    <!-- ====== 頁面一：點單表單 ====== -->
-    <div id="page1" class="page active">
+    <!-- ============================================================ -->
+    <!-- ====== 頁面一：客戶點單 ====== -->
+    <!-- ============================================================ -->
+    <div id="pageClient" class="page active">
         <div class="card">
-            <h2>📋 新增點單</h2>
+            <h2 class="card-title">📋 客戶點單</h2>
             <form id="orderForm">
                 <div class="field">
                     <label>客戶姓名 <span class="required">*</span></label>
@@ -109,205 +128,315 @@
                 </div>
                 <div class="field">
                     <label>聯絡資訊 <span class="required">*</span></label>
-                    <input type="text" id="contact" placeholder="手機 / Line ID">
+                    <input type="text" id="contact" placeholder="手機 / Line ID" required>
                 </div>
                 <div class="field">
-                    <label>點單時間</label>
-                    <input type="datetime-local" id="orderTime" readonly style="background:#f8f9fa;">
+                    <label>預約時間 <span class="required">*</span></label>
+                    <input type="datetime-local" id="orderTime" required>
                 </div>
+                
+                <!-- 雙打手選擇 -->
                 <div class="field">
-                    <label>指定打手 <span class="required">*</span></label>
-                    <select id="player" required>
+                    <label>指定打手（可選一位或兩位）</label>
+                    <div class="double-select">
+                        <select id="player1">
+                            <option value="">— 不指定 —</option>
+                            <option value="小糖">小糖</option>
+                            <option value="吐司">吐司</option>
+                            <option value="星北">星北</option>
+                            <option value="寒月">寒月</option>
+                        </select>
+                        <select id="player2">
+                            <option value="">— 不指定 —</option>
+                            <option value="小糖">小糖</option>
+                            <option value="吐司">吐司</option>
+                            <option value="星北">星北</option>
+                            <option value="寒月">寒月</option>
+                        </select>
+                    </div>
+                    <div style="font-size:13px;color:#888;margin-top:4px;">
+                        💡 可選一位、兩位，或全部「不指定」讓打手自由接單
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label>付款方式 <span class="required">*</span></label>
+                    <select id="payment" required>
                         <option value="">— 請選擇 —</option>
-                        <option value="阿豪">阿豪</option>
-                        <option value="小陳">小陳</option>
-                        <option value="大衛">大衛</option>
-                        <option value="Mike">Mike</option>
+                        <option value="現金">現金</option>
+                        <option value="信用卡">信用卡</option>
+                        <option value="轉帳">轉帳</option>
+                        <option value="會員扣款">會員扣款</option>
                     </select>
                 </div>
                 <div class="field">
-                    <label>補充說明</label>
-                    <textarea id="remark" placeholder="特殊需求、備註…"></textarea>
-                </div>
-                <div class="field">
-                    <label>結單時間</label>
-                    <input type="datetime-local" id="closeTime">
-                </div>
-                <div class="field">
-                    <label>結單截圖</label>
-                    <input type="file" id="screenshot" accept="image/*">
+                    <label>備註</label>
+                    <textarea id="remark" placeholder="特殊需求、指定球桿、時段偏好…"></textarea>
                 </div>
                 <button type="submit" class="btn-primary">✅ 送出點單</button>
             </form>
         </div>
     </div>
 
-    <!-- ====== 頁面二：總表 ====== -->
-    <div id="page2" class="page">
+    <!-- ============================================================ -->
+    <!-- ====== 頁面二：打手接單 ====== -->
+    <!-- ============================================================ -->
+    <div id="pagePlayer" class="page">
         <div class="card">
-            <h2>📊 所有紀錄 <span id="countDisplay" style="font-size:14px;color:#888;font-weight:400;"></span></h2>
-            <div style="overflow-x:auto;">
-                <table>
-                    <thead><tr>
-                        <th>客戶</th><th>聯絡</th><th>點單時間</th><th>打手</th><th>補充</th><th>結單時間</th><th>截圖</th>
-                    </tr></thead>
-                    <tbody id="tableBody">
-                        <tr><td colspan="7" class="empty">目前尚無資料，請先新增點單</td></tr>
-                    </tbody>
-                </table>
-            </div>
-            <div style="margin-top:16px; display:flex; gap:12px; flex-wrap:wrap;">
-                <button class="btn-danger" onclick="clearAll()">🗑 清除全部</button>
-                <button class="btn-primary" style="width:auto; padding:8px 24px;" onclick="exportCSV()">📥 匯出 CSV</button>
-            </div>
-        </div>
-    </div>
+            <h2 class="card-title">🎯 打手接單平台</h2>
+            
+            <div class="section-title">📌 待接單 <span id="pendingLabel">（0 筆）</span></div>
+            <div id="pendingList"><div class="empty">目前沒有待接單</div></div>
 
-    <!-- ====== 頁面三：手機版 ====== -->
-    <div id="page3" class="page">
-        <div class="card">
-            <h2>📱 即時清單</h2>
-            <div id="mobileList">
-                <div class="empty">尚無資料</div>
-            </div>
+            <div class="section-title" style="margin-top:28px;">✅ 已接單 <span id="takenLabel">（0 筆）</span></div>
+            <div id="takenList"><div class="empty">尚無已接單</div></div>
         </div>
     </div>
 </div>
 
 <script>
-// ====== 資料儲存 ======
-let orders = JSON.parse(localStorage.getItem('clubOrders')) || [];
+// ============================================================
+//  打手名單（統一管理）
+// ============================================================
+const PLAYERS = ['小糖', '吐司', '星北', '寒月'];
 
-// ====== 儲存 ======
+// ============================================================
+//  資料層
+// ============================================================
+let orders = JSON.parse(localStorage.getItem('clubOrders_v3')) || [];
+
 function save() {
-    localStorage.setItem('clubOrders', JSON.stringify(orders));
+    localStorage.setItem('clubOrders_v3', JSON.stringify(orders));
     renderAll();
 }
 
-// ====== 設定現在時間 ======
-function setNow() {
-    const now = new Date();
-    const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
-    document.getElementById('orderTime').value = local.toISOString().slice(0,16);
-}
-setNow();
-
-// ====== 新增訂單 ======
+// ============================================================
+//  客戶端：新增點單
+// ============================================================
 document.getElementById('orderForm').addEventListener('submit', function(e) {
     e.preventDefault();
     const client = document.getElementById('clientName').value.trim();
     const contact = document.getElementById('contact').value.trim();
-    const player = document.getElementById('player').value;
+    const orderTime = document.getElementById('orderTime').value;
+    const player1 = document.getElementById('player1').value;
+    const player2 = document.getElementById('player2').value;
+    const payment = document.getElementById('payment').value;
     const remark = document.getElementById('remark').value.trim();
-    const closeTime = document.getElementById('closeTime').value;
-    const fileInput = document.getElementById('screenshot');
-    let fileName = '';
-    if (fileInput.files.length > 0) {
-        fileName = fileInput.files[0].name;
-    }
-    if (!client || !player) {
-        alert('請填寫客戶姓名與指定打手');
+
+    if (!client || !contact || !orderTime || !payment) {
+        alert('請填寫所有必填欄位（客戶姓名、聯絡、時間、付款方式）');
         return;
     }
+
+    // 處理打手名單：過濾掉空白，組合成陣列
+    let selectedPlayers = [];
+    if (player1) selectedPlayers.push(player1);
+    if (player2 && player2 !== player1) selectedPlayers.push(player2); // 避免重複選同一個人
+
     const order = {
         id: Date.now(),
         client,
-        contact: contact || '—',
-        orderTime: document.getElementById('orderTime').value || new Date().toISOString().slice(0,16),
-        player,
+        contact,
+        orderTime,
+        players: selectedPlayers,           // 陣列：[] 表示不指定，['小糖'] 表示指定一位，['小糖','吐司'] 表示指定兩位
+        playerDisplay: selectedPlayers.length === 0 ? '不指定' : selectedPlayers.join('、'),
+        payment,
         remark: remark || '—',
-        closeTime: closeTime || '未結單',
-        screenshot: fileName || '未上傳'
+        status: 'pending',                  // pending / taken
+        takenBy: null,                      // 接單的打手名字
+        takenAt: null,
+        createdAt: new Date().toISOString()
     };
+
     orders.unshift(order);
     save();
     this.reset();
-    setNow();
-    document.getElementById('closeTime').value = '';
-    alert('✅ 點單已送出！');
+    document.getElementById('orderTime').value = '';
+    document.getElementById('player1').value = '';
+    document.getElementById('player2').value = '';
+    alert('✅ 點單已送出！等待打手接單');
 });
 
-// ====== 渲染全部 ======
-function renderAll() {
-    renderTable();
-    renderMobile();
-    document.getElementById('countDisplay').textContent = `（共 ${orders.length} 筆）`;
+// ============================================================
+//  打手端：渲染接單列表
+// ============================================================
+function renderPlayerView() {
+    const pending = orders.filter(o => o.status === 'pending');
+    const taken = orders.filter(o => o.status === 'taken');
+
+    document.getElementById('pendingCount').textContent = pending.length;
+    document.getElementById('pendingLabel').textContent = `（${pending.length} 筆）`;
+    document.getElementById('takenLabel').textContent = `（${taken.length} 筆）`;
+
+    // ---- 待接單 ----
+    const pendingContainer = document.getElementById('pendingList');
+    if (pending.length === 0) {
+        pendingContainer.innerHTML = '<div class="empty">🎉 目前沒有待接單</div>';
+    } else {
+        pendingContainer.innerHTML = pending.map(o => {
+            const currentPlayer = document.getElementById('currentPlayerSelect')?.value || '小糖';
+            
+            // 判斷此單是否指定了「我」
+            const isSpecifiedMe = o.players.includes(currentPlayer);
+            // 判斷是否完全不指定
+            const isUnspecified = o.players.length === 0;
+            // 判斷指定了誰（顯示用）
+            const specifiedList = o.players.length > 0 ? o.players.join('、') : '無';
+
+            let tagHtml = '';
+            if (isUnspecified) {
+                tagHtml = `<span class="tag-unspecified">🔄 未指定（自由接）</span>`;
+            } else if (isSpecifiedMe) {
+                tagHtml = `<span class="tag-specified">🎯 指定我！</span>`;
+            } else {
+                tagHtml = `<span class="tag-specified">指定：${specifiedList}</span>`;
+            }
+
+            // 判斷該打手是否能接此單（未指定 或 指定名單中有我）
+            const canTake = isUnspecified || isSpecifiedMe;
+
+            return `
+                <div class="order-item" style="border-left-color: ${isSpecifiedMe ? '#e67e22' : (isUnspecified ? '#2a7de1' : '#999')}">
+                    <div class="info">
+                        <div class="row">
+                            <span><span class="label">👤</span> ${o.client}</span>
+                            <span><span class="label">📞</span> ${o.contact}</span>
+                            <span><span class="label">⏰</span> ${o.orderTime}</span>
+                            <span><span class="label">💳</span> ${o.payment}</span>
+                        </div>
+                        <div class="row">
+                            <span>${tagHtml}</span>
+                            <span><span class="label">📝</span> ${o.remark}</span>
+                        </div>
+                    </div>
+                    <div class="actions">
+                        ${canTake ? 
+                            `<button class="btn-success" onclick="takeOrder(${o.id}, '${currentPlayer}')">✅ 接單</button>` :
+                            `<span style="font-size:13px;color:#888;">🔒 指定給 ${specifiedList}</span>`
+                        }
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // ---- 已接單 ----
+    const takenContainer = document.getElementById('takenList');
+    if (taken.length === 0) {
+        takenContainer.innerHTML = '<div class="empty">尚無已接單</div>';
+    } else {
+        takenContainer.innerHTML = taken.map(o => `
+            <div class="order-item" style="border-left-color: #27ae60; background:#f0faf5;">
+                <div class="info">
+                    <div class="row">
+                        <span><span class="label">👤</span> ${o.client}</span>
+                        <span><span class="label">📞</span> ${o.contact}</span>
+                        <span><span class="label">⏰</span> ${o.orderTime}</span>
+                        <span><span class="label">💳</span> ${o.payment}</span>
+                    </div>
+                    <div class="row">
+                        <span><span class="tag-taken">✅ 已接單：${o.takenBy}</span></span>
+                        <span><span class="label">📝</span> ${o.remark}</span>
+                        <span style="font-size:12px;color:#888;">接單時間：${o.takenAt || '—'}</span>
+                    </div>
+                </div>
+                <div class="actions">
+                    <button class="btn-outline" onclick="releaseOrder(${o.id})">↩️ 釋放</button>
+                </div>
+            </div>
+        `).join('');
+    }
 }
 
-// ====== 渲染總表 ======
-function renderTable() {
-    const tbody = document.getElementById('tableBody');
-    if (orders.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" class="empty">目前尚無資料</td></tr>';
+// ============================================================
+//  打手端：接單 / 釋放
+// ============================================================
+function takeOrder(orderId, playerName) {
+    const order = orders.find(o => o.id === orderId);
+    if (!order) return;
+    if (order.status === 'taken') {
+        alert('此單已被其他打手接走');
         return;
     }
-    tbody.innerHTML = orders.map(o => `
-        <tr>
-            <td data-label="客戶">${o.client}</td>
-            <td data-label="聯絡">${o.contact}</td>
-            <td data-label="點單時間">${o.orderTime}</td>
-            <td data-label="打手"><span class="badge">${o.player}</span></td>
-            <td data-label="補充">${o.remark}</td>
-            <td data-label="結單時間">${o.closeTime}</td>
-            <td data-label="截圖">${o.screenshot}</td>
-        </tr>
-    `).join('');
-}
-
-// ====== 渲染手機版 ======
-function renderMobile() {
-    const container = document.getElementById('mobileList');
-    if (orders.length === 0) {
-        container.innerHTML = '<div class="empty">尚無資料</div>';
+    // 如果有指定打手且名單中沒有自己，不能接
+    if (order.players.length > 0 && !order.players.includes(playerName)) {
+        alert(`此單已指定給 ${order.players.join('、')}，你不能接`);
         return;
     }
-    container.innerHTML = orders.map(o => `
-        <div class="order-card">
-            <div class="row"><span class="label">👤 客戶</span><span class="value">${o.client}</span></div>
-            <div class="row"><span class="label">📞 聯絡</span><span class="value">${o.contact}</span></div>
-            <div class="row"><span class="label">⏰ 點單</span><span class="value">${o.orderTime}</span></div>
-            <div class="row"><span class="label">🎯 打手</span><span class="player-tag">${o.player}</span></div>
-            <div class="row"><span class="label">📝 補充</span><span class="value" style="font-weight:400;">${o.remark}</span></div>
-            <hr style="margin:8px 0;border:0;border-top:1px dashed #ddd;">
-            <div class="row"><span class="label">🔚 結單</span><span class="value">${o.closeTime}</span></div>
-            <div class="row"><span class="label">🖼 截圖</span><span class="value" style="font-weight:400;font-size:13px;">${o.screenshot}</span></div>
-        </div>
-    `).join('');
-}
-
-// ====== 清除全部 ======
-function clearAll() {
-    if (confirm('確定要刪除所有紀錄嗎？')) {
-        orders = [];
+    if (confirm(`確定要接 ${order.client} 的單嗎？`)) {
+        order.status = 'taken';
+        order.takenBy = playerName;
+        order.takenAt = new Date().toLocaleString();
         save();
+        alert('✅ 接單成功！');
     }
 }
 
-// ====== 匯出 CSV ======
-function exportCSV() {
-    if (orders.length === 0) { alert('沒有資料可匯出'); return; }
-    const headers = ['客戶','聯絡','點單時間','打手','補充','結單時間','截圖'];
-    const rows = orders.map(o => [o.client, o.contact, o.orderTime, o.player, o.remark, o.closeTime, o.screenshot]);
-    let csv = headers.join(',') + '\n' + rows.map(r => r.join(',')).join('\n');
-    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `俱樂部紀錄_${new Date().toISOString().slice(0,10)}.csv`;
-    link.click();
+function releaseOrder(orderId) {
+    if (!confirm('確定要釋放此單嗎？（將回到待接單狀態）')) return;
+    const order = orders.find(o => o.id === orderId);
+    if (!order) return;
+    order.status = 'pending';
+    order.takenBy = null;
+    order.takenAt = null;
+    save();
+    alert('↩️ 已釋放此單');
 }
 
-// ====== 頁籤切換 ======
+// ============================================================
+//  打手身份切換
+// ============================================================
+function addPlayerSwitcher() {
+    const card = document.querySelector('#pagePlayer .card');
+    const title = card.querySelector('.card-title');
+    const switcher = document.createElement('div');
+    switcher.style.cssText = 'display:flex;align-items:center;gap:12px;margin-left:auto;flex-wrap:wrap;';
+    switcher.innerHTML = `
+        <span style="font-size:14px;font-weight:600;color:#555;">👤 當前打手：</span>
+        <select id="currentPlayerSelect" style="padding:6px 14px;border-radius:30px;border:1px solid #d0d7de;font-size:14px;font-weight:600;">
+            ${PLAYERS.map(p => `<option value="${p}">${p}</option>`).join('')}
+        </select>
+    `;
+    title.appendChild(switcher);
+
+    document.getElementById('currentPlayerSelect').addEventListener('change', function() {
+        renderPlayerView();
+    });
+}
+
+// ============================================================
+//  總渲染
+// ============================================================
+function renderAll() {
+    renderPlayerView();
+}
+
+// ============================================================
+//  頁籤切換
+// ============================================================
 document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', function() {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         this.classList.add('active');
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.getElementById(this.dataset.page).classList.add('active');
+        if (this.dataset.page === 'pagePlayer') {
+            renderPlayerView();
+        }
     });
 });
 
-// ====== 初始化 ======
+// ============================================================
+//  初始化
+// ============================================================
+addPlayerSwitcher();
 renderAll();
+
+document.addEventListener('DOMContentLoaded', function() {
+    const now = new Date();
+    const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+    document.getElementById('orderTime').value = local.toISOString().slice(0,16);
+});
 </script>
 </body>
 </html>
