@@ -1,442 +1,513 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>俱樂部點單．接單系統</title>
+    <title>早餐店小游戏 · 60秒限时挑战</title>
     <style>
-        * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
-        body { background: #f0f4f9; margin: 0; padding: 16px; }
-        .app { max-width: 900px; margin: 0 auto; }
-
-        .tabs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-        .tab-btn {
-            flex: 1; min-width: 120px; padding: 14px 20px; border: none;
-            border-radius: 40px; font-weight: 700; font-size: 15px;
-            background: white; color: #555; cursor: pointer;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06); transition: 0.2s;
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
         }
-        .tab-btn.active { background: #1a2b3c; color: white; box-shadow: 0 4px 12px rgba(26,43,60,0.3); }
-        .tab-btn:hover { transform: translateY(-2px); }
-        .tab-btn .badge-count {
-            background: #e74c3c; color: white; border-radius: 30px;
-            padding: 1px 10px; font-size: 12px; margin-left: 6px;
+        body {
+            min-height: 100vh;
+            background: linear-gradient(145deg, #f9e7b3 0%, #f5d99b 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+            margin: 0;
         }
-        .page { display: none; }
-        .page.active { display: block; }
-
-        .card {
-            background: white; border-radius: 24px; padding: 28px 24px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
-            margin-bottom: 20px;
+        .game-container {
+            max-width: 800px;
+            width: 100%;
+            background: #fffaec;
+            border-radius: 48px;
+            box-shadow: 0 20px 30px rgba(0, 0, 0, 0.2), 0 6px 0 #d9b880 inset, 0 -6px 0 #bfa06b inset;
+            padding: 1.5rem 1.8rem 2rem;
+            border: 3px solid #b38b5b;
         }
-        .card-title {
-            margin-top: 0; color: #1a2b3c; border-left: 5px solid #2a7de1;
-            padding-left: 15px; display: flex; justify-content: space-between; align-items: center;
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #faeac6;
+            border-radius: 60px;
+            padding: 0.7rem 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 0 #b38b5b, 0 6px 12px rgba(0,0,0,0.1);
+            border: 2px solid #c9a76b;
+        }
+        .money, .timer {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 800;
+            font-size: 1.5rem;
+            background: #fff4dc;
+            padding: 0.3rem 1.4rem;
+            border-radius: 40px;
+            box-shadow: 0 4px 0 #ad8b58 inset, 0 2px 6px rgba(0,0,0,0.1);
+            color: #4d2e1b;
+        }
+        .money span, .timer span {
+            font-size: 2rem;
+            margin-right: 4px;
+        }
+        .timer {
+            background: #ffe6b3;
+        }
+        .timer.warning {
+            background: #ffb3b3;
+            color: #a10000;
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+        .customers-area {
+            background: #efdbb8;
+            border-radius: 30px;
+            padding: 1.2rem 1rem;
+            margin-bottom: 1.2rem;
+            box-shadow: 0 6px 0 #ac8b5c inset, 0 10px 15px rgba(0,0,0,0.1);
+            border: 2px solid #c8a56b;
+        }
+        .customer-queue {
+            display: flex;
             flex-wrap: wrap;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 1.2rem;
+            min-height: 160px;
         }
-        .field { margin-bottom: 18px; }
-        label { display: block; font-weight: 600; font-size: 14px; color: #333; margin-bottom: 5px; }
-        label .required { color: #e74c3c; }
-        input, select, textarea {
-            width: 100%; padding: 12px 14px; border: 1px solid #d0d7de;
-            border-radius: 12px; font-size: 15px; transition: 0.2s;
-            background: white;
+        .customer-card {
+            background: #ffeac2;
+            border-radius: 30px 30px 20px 20px;
+            padding: 0.7rem 1rem 1rem;
+            width: 110px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 8px 0 #b48b4b, 0 10px 18px rgba(0,0,0,0.15);
+            border: 2px solid #dbb87c;
+            transition: all 0.15s;
         }
-        input:focus, select:focus, textarea:focus {
-            border-color: #2a7de1; outline: none; box-shadow: 0 0 0 3px rgba(42,125,225,0.15);
+        .customer-face {
+            font-size: 3.5rem;
+            line-height: 1;
+            filter: drop-shadow(0 4px 2px rgba(0,0,0,0.15));
+            margin-bottom: 4px;
         }
-        textarea { min-height: 60px; resize: vertical; }
-        .btn-primary {
-            width: 100%; padding: 14px; background: #2a7de1; color: white;
-            border: none; border-radius: 40px; font-size: 17px; font-weight: 700;
-            cursor: pointer; transition: 0.2s;
+        .order-badge {
+            background: #fff6e0;
+            border-radius: 50px;
+            padding: 0.3rem 0.6rem;
+            font-size: 1.4rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            box-shadow: 0 2px 0 #ad8b58 inset;
+            width: 100%;
+            color: #3b2a1a;
         }
-        .btn-primary:hover { background: #1a5fb4; transform: scale(0.98); }
-        .btn-success {
-            padding: 8px 20px; background: #27ae60; color: white;
-            border: none; border-radius: 30px; font-weight: 700; cursor: pointer;
-            font-size: 14px; transition: 0.2s;
+        .order-badge span {
+            font-size: 1.4rem;
+            margin: 0 1px;
         }
-        .btn-success:hover { background: #1e8449; }
-        .btn-danger {
-            padding: 8px 16px; background: #e74c3c; color: white;
-            border: none; border-radius: 30px; font-weight: 600; cursor: pointer;
+        .empty-queue {
+            color: #7f613b;
+            font-size: 1.3rem;
+            font-weight: 600;
+            text-align: center;
+            width: 100%;
+            padding: 2rem 0;
+            opacity: 0.8;
         }
-        .btn-danger:hover { background: #c0392b; }
-        .btn-outline {
-            padding: 8px 16px; background: transparent; color: #2a7de1;
-            border: 2px solid #2a7de1; border-radius: 30px; font-weight: 600; cursor: pointer;
+        .menu-area {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin: 1.5rem 0 1rem;
         }
-        .btn-outline:hover { background: #2a7de1; color: white; }
-
-        .order-item {
-            background: #f8fafc; border-radius: 16px; padding: 16px 20px;
-            margin-bottom: 12px; border-left: 5px solid #2a7de1;
-            display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center;
+        .food-btn {
+            background: #ffeac2;
+            border: none;
+            border-radius: 40px;
+            padding: 1rem 1.2rem;
+            font-size: 2.6rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 8px 0 #b48b4b, 0 8px 16px rgba(0,0,0,0.2);
+            transition: all 0.08s ease;
+            cursor: pointer;
+            border: 2px solid #dbb87c;
+            flex: 0 1 110px;
+            color: #3b2a1a;
+            font-weight: 700;
         }
-        .order-item .info { flex: 2; min-width: 200px; }
-        .order-item .info .row { display: flex; gap: 16px; flex-wrap: wrap; font-size: 14px; margin-bottom: 4px; }
-        .order-item .info .label { color: #6b7a8a; font-weight: 600; }
-        .order-item .info .value { font-weight: 600; color: #0b1e2e; }
-        .order-item .actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
-        
-        .tag-specified { background: #d4e2fc; color: #1a4f8b; padding: 2px 14px; border-radius: 30px; font-size: 12px; font-weight: 700; }
-        .tag-unspecified { background: #fef3c7; color: #92400e; padding: 2px 14px; border-radius: 30px; font-size: 12px; font-weight: 700; }
-        .tag-taken { background: #d1fae5; color: #065f46; padding: 2px 14px; border-radius: 30px; font-size: 12px; font-weight: 700; }
-        .tag-partial { background: #fef3c7; color: #92400e; padding: 2px 14px; border-radius: 30px; font-size: 12px; font-weight: 700; }
-
-        .status-badge { font-size: 12px; font-weight: 700; padding: 3px 14px; border-radius: 30px; }
-        .status-pending { background: #fef3c7; color: #92400e; }
-        .status-taken { background: #d1fae5; color: #065f46; }
-
-        .section-title {
-            font-size: 18px; font-weight: 700; color: #1a2b3c;
-            margin: 20px 0 12px 0; padding-bottom: 8px; border-bottom: 2px solid #e8edf2;
+        .food-btn:active {
+            transform: translateY(5px);
+            box-shadow: 0 3px 0 #b48b4b, 0 8px 16px rgba(0,0,0,0.1);
         }
-        .empty { text-align: center; color: #999; padding: 30px 0; }
-
-        .double-select { display: flex; gap: 12px; flex-wrap: wrap; }
-        .double-select select { flex: 1; min-width: 120px; }
-
-        @media (max-width: 600px) {
-            .card { padding: 18px 14px; }
-            .order-item { flex-direction: column; align-items: stretch; gap: 12px; }
-            .order-item .actions { justify-content: flex-end; }
-            .double-select { flex-direction: column; }
+        .food-btn .food-label {
+            font-size: 1rem;
+            background: #f5e0b7;
+            padding: 0.2rem 0.8rem;
+            border-radius: 40px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 2px 0 #b48b4b inset;
+            color: #4d2e1b;
+        }
+        .message-area {
+            min-height: 2.8rem;
+            font-size: 1.2rem;
+            font-weight: 700;
+            text-align: center;
+            padding: 0.5rem;
+            border-radius: 30px;
+            background: #faeac6;
+            box-shadow: 0 2px 0 #b48b4b inset;
+            margin-top: 0.8rem;
+            color: #664d33;
+        }
+        .reset-btn {
+            background: #b48b4b;
+            border: none;
+            color: #fff8e7;
+            font-weight: 800;
+            font-size: 1.2rem;
+            padding: 0.8rem 2rem;
+            border-radius: 60px;
+            display: block;
+            margin: 1rem auto 0;
+            box-shadow: 0 6px 0 #6b4f2b, 0 6px 12px rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: 0.08s;
+            border: 2px solid #dbb87c;
+            letter-spacing: 1px;
+        }
+        .reset-btn:active {
+            transform: translateY(5px);
+            box-shadow: 0 1px 0 #6b4f2b, 0 6px 12px rgba(0,0,0,0.1);
+        }
+        .disabled-click {
+            pointer-events: none;
+            opacity: 0.6;
+            filter: grayscale(0.5);
         }
     </style>
 </head>
 <body>
-<div class="app">
-    <!-- 頁籤 -->
-    <div class="tabs">
-        <button class="tab-btn active" data-page="pageClient">📝 客戶點單</button>
-        <button class="tab-btn" data-page="pagePlayer">🎯 打手接單 <span id="pendingCount" class="badge-count">0</span></button>
+<div class="game-container" id="gameContainer">
+    <!-- 頂部狀態 -->
+    <div class="top-bar">
+        <div class="money">💰 <span id="moneyDisplay">0</span></div>
+        <div class="timer" id="timerBox">⏰ <span id="timerDisplay">60</span>s</div>
     </div>
 
-    <!-- ============================================================ -->
-    <!-- ====== 頁面一：客戶點單 ====== -->
-    <!-- ============================================================ -->
-    <div id="pageClient" class="page active">
-        <div class="card">
-            <h2 class="card-title">📋 客戶點單</h2>
-            <form id="orderForm">
-                <div class="field">
-                    <label>客戶姓名 <span class="required">*</span></label>
-                    <input type="text" id="clientName" placeholder="請輸入全名" required>
-                </div>
-                <div class="field">
-                    <label>聯絡資訊 <span class="required">*</span></label>
-                    <input type="text" id="contact" placeholder="手機 / Line ID" required>
-                </div>
-                <div class="field">
-                    <label>預約時間 <span class="required">*</span></label>
-                    <input type="datetime-local" id="orderTime" required>
-                </div>
-                
-                <!-- 雙打手選擇 -->
-                <div class="field">
-                    <label>指定打手（可選一位或兩位）</label>
-                    <div class="double-select">
-                        <select id="player1">
-                            <option value="">— 不指定 —</option>
-                            <option value="小糖">小糖</option>
-                            <option value="吐司">吐司</option>
-                            <option value="星北">星北</option>
-                            <option value="寒月">寒月</option>
-                        </select>
-                        <select id="player2">
-                            <option value="">— 不指定 —</option>
-                            <option value="小糖">小糖</option>
-                            <option value="吐司">吐司</option>
-                            <option value="星北">星北</option>
-                            <option value="寒月">寒月</option>
-                        </select>
-                    </div>
-                    <div style="font-size:13px;color:#888;margin-top:4px;">
-                        💡 可選一位、兩位，或全部「不指定」讓打手自由接單
-                    </div>
-                </div>
-
-                <div class="field">
-                    <label>付款方式 <span class="required">*</span></label>
-                    <select id="payment" required>
-                        <option value="">— 請選擇 —</option>
-                        <option value="現金">現金</option>
-                        <option value="信用卡">信用卡</option>
-                        <option value="轉帳">轉帳</option>
-                        <option value="會員扣款">會員扣款</option>
-                    </select>
-                </div>
-                <div class="field">
-                    <label>備註</label>
-                    <textarea id="remark" placeholder="特殊需求、指定球桿、時段偏好…"></textarea>
-                </div>
-                <button type="submit" class="btn-primary">✅ 送出點單</button>
-            </form>
+    <!-- 客人佇列 -->
+    <div class="customers-area">
+        <div class="customer-queue" id="customerQueue">
+            <!-- 隨機客人會動態產生 -->
+            <div class="empty-queue">等待客人上門...</div>
         </div>
     </div>
 
-    <!-- ============================================================ -->
-    <!-- ====== 頁面二：打手接單 ====== -->
-    <!-- ============================================================ -->
-    <div id="pagePlayer" class="page">
-        <div class="card">
-            <h2 class="card-title">🎯 打手接單平台</h2>
-            
-            <div class="section-title">📌 待接單 <span id="pendingLabel">（0 筆）</span></div>
-            <div id="pendingList"><div class="empty">目前沒有待接單</div></div>
-
-            <div class="section-title" style="margin-top:28px;">✅ 已接單 <span id="takenLabel">（0 筆）</span></div>
-            <div id="takenList"><div class="empty">尚無已接單</div></div>
-        </div>
+    <!-- 餐點按鈕 -->
+    <div class="menu-area" id="menuArea">
+        <button class="food-btn" data-food="toast">🍞<span class="food-label">烤吐司</span></button>
+        <button class="food-btn" data-food="pancake">🥞<span class="food-label">蛋餅</span></button>
+        <button class="food-btn" data-food="soymilk">🥛<span class="food-label">豆漿</span></button>
+        <button class="food-btn" data-food="milktea">🧋<span class="food-label">奶茶</span></button>
     </div>
+
+    <!-- 提示訊息 -->
+    <div class="message-area" id="messageArea">點選餐點完成訂單！</div>
+
+    <!-- 重玩按鈕 -->
+    <button class="reset-btn" id="resetBtn">重新開店</button>
 </div>
 
 <script>
-// ============================================================
-//  打手名單（統一管理）
-// ============================================================
-const PLAYERS = ['小糖', '吐司', '星北', '寒月'];
+    (function() {
+        // ---------- 遊戲設定 ----------
+        const FOODS = [
+            { key: 'toast', name: '烤吐司', emoji: '🍞' },
+            { key: 'pancake', name: '蛋餅', emoji: '🥞' },
+            { key: 'soymilk', name: '豆漿', emoji: '🥛' },
+            { key: 'milktea', name: '奶茶', emoji: '🧋' }
+        ];
 
-// ============================================================
-//  資料層
-// ============================================================
-let orders = JSON.parse(localStorage.getItem('clubOrders_v3')) || [];
+        // 客人表情
+        const FACES = ['👩', '👨', '👧', '👦', '👵', '👴', '🧑', '👩‍🦰', '👨‍🦱', '👱‍♀️', '👩‍🦳', '🧔'];
 
-function save() {
-    localStorage.setItem('clubOrders_v3', JSON.stringify(orders));
-    renderAll();
-}
+        // 遊戲狀態
+        let money = 0;
+        let timeLeft = 60;              // 秒
+        let timerInterval = null;
+        let gameActive = false;         // 是否進行中
+        let customers = [];             // 客人陣列 { id, face, order (food key) }
 
-// ============================================================
-//  客戶端：新增點單
-// ============================================================
-document.getElementById('orderForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const client = document.getElementById('clientName').value.trim();
-    const contact = document.getElementById('contact').value.trim();
-    const orderTime = document.getElementById('orderTime').value;
-    const player1 = document.getElementById('player1').value;
-    const player2 = document.getElementById('player2').value;
-    const payment = document.getElementById('payment').value;
-    const remark = document.getElementById('remark').value.trim();
+        // 控制客人產生的計時器
+        let spawnInterval = null;
 
-    if (!client || !contact || !orderTime || !payment) {
-        alert('請填寫所有必填欄位（客戶姓名、聯絡、時間、付款方式）');
-        return;
-    }
+        // 下一個客人id
+        let nextCustomerId = 1;
 
-    // 處理打手名單：過濾掉空白，組合成陣列
-    let selectedPlayers = [];
-    if (player1) selectedPlayers.push(player1);
-    if (player2 && player2 !== player1) selectedPlayers.push(player2); // 避免重複選同一個人
+        // DOM 元素
+        const moneyDisplay = document.getElementById('moneyDisplay');
+        const timerDisplay = document.getElementById('timerDisplay');
+        const timerBox = document.getElementById('timerBox');
+        const customerQueue = document.getElementById('customerQueue');
+        const messageArea = document.getElementById('messageArea');
+        const resetBtn = document.getElementById('resetBtn');
+        const foodBtns = document.querySelectorAll('.food-btn');
 
-    const order = {
-        id: Date.now(),
-        client,
-        contact,
-        orderTime,
-        players: selectedPlayers,           // 陣列：[] 表示不指定，['小糖'] 表示指定一位，['小糖','吐司'] 表示指定兩位
-        playerDisplay: selectedPlayers.length === 0 ? '不指定' : selectedPlayers.join('、'),
-        payment,
-        remark: remark || '—',
-        status: 'pending',                  // pending / taken
-        takenBy: null,                      // 接單的打手名字
-        takenAt: null,
-        createdAt: new Date().toISOString()
-    };
+        // ---------- 輔助函式 ----------
+        // 隨機從陣列取一個
+        function randomItem(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
 
-    orders.unshift(order);
-    save();
-    this.reset();
-    document.getElementById('orderTime').value = '';
-    document.getElementById('player1').value = '';
-    document.getElementById('player2').value = '';
-    alert('✅ 點單已送出！等待打手接單');
-});
+        // 更新金錢顯示
+        function updateMoneyDisplay() {
+            moneyDisplay.textContent = money;
+        }
 
-// ============================================================
-//  打手端：渲染接單列表
-// ============================================================
-function renderPlayerView() {
-    const pending = orders.filter(o => o.status === 'pending');
-    const taken = orders.filter(o => o.status === 'taken');
-
-    document.getElementById('pendingCount').textContent = pending.length;
-    document.getElementById('pendingLabel').textContent = `（${pending.length} 筆）`;
-    document.getElementById('takenLabel').textContent = `（${taken.length} 筆）`;
-
-    // ---- 待接單 ----
-    const pendingContainer = document.getElementById('pendingList');
-    if (pending.length === 0) {
-        pendingContainer.innerHTML = '<div class="empty">🎉 目前沒有待接單</div>';
-    } else {
-        pendingContainer.innerHTML = pending.map(o => {
-            const currentPlayer = document.getElementById('currentPlayerSelect')?.value || '小糖';
-            
-            // 判斷此單是否指定了「我」
-            const isSpecifiedMe = o.players.includes(currentPlayer);
-            // 判斷是否完全不指定
-            const isUnspecified = o.players.length === 0;
-            // 判斷指定了誰（顯示用）
-            const specifiedList = o.players.length > 0 ? o.players.join('、') : '無';
-
-            let tagHtml = '';
-            if (isUnspecified) {
-                tagHtml = `<span class="tag-unspecified">🔄 未指定（自由接）</span>`;
-            } else if (isSpecifiedMe) {
-                tagHtml = `<span class="tag-specified">🎯 指定我！</span>`;
+        // 更新計時器顯示
+        function updateTimerDisplay() {
+            timerDisplay.textContent = timeLeft;
+            if (timeLeft <= 10) {
+                timerBox.classList.add('warning');
             } else {
-                tagHtml = `<span class="tag-specified">指定：${specifiedList}</span>`;
+                timerBox.classList.remove('warning');
+            }
+        }
+
+        // 顯示短暫訊息 (幾秒後恢復預設)
+        function setMessage(text, isGood = true, duration = 1500) {
+            messageArea.textContent = text;
+            messageArea.style.color = isGood ? '#2b5e1e' : '#a12b2b';
+            if (duration > 0) {
+                clearTimeout(messageArea.msgTimeout);
+                messageArea.msgTimeout = setTimeout(() => {
+                    if (gameActive) {
+                        messageArea.textContent = '點選餐點完成訂單！';
+                        messageArea.style.color = '#664d33';
+                    }
+                }, duration);
+            }
+        }
+
+        // ---------- 渲染客人佇列 ----------
+        function renderCustomers() {
+            if (!customerQueue) return;
+
+            if (customers.length === 0) {
+                customerQueue.innerHTML = '<div class="empty-queue">等待客人上門...</div>';
+                return;
             }
 
-            // 判斷該打手是否能接此單（未指定 或 指定名單中有我）
-            const canTake = isUnspecified || isSpecifiedMe;
+            let html = '';
+            customers.forEach(cust => {
+                // 找出餐點對應的emoji
+                const foodItem = FOODS.find(f => f.key === cust.order);
+                const foodEmoji = foodItem ? foodItem.emoji : '❓';
 
-            return `
-                <div class="order-item" style="border-left-color: ${isSpecifiedMe ? '#e67e22' : (isUnspecified ? '#2a7de1' : '#999')}">
-                    <div class="info">
-                        <div class="row">
-                            <span><span class="label">👤</span> ${o.client}</span>
-                            <span><span class="label">📞</span> ${o.contact}</span>
-                            <span><span class="label">⏰</span> ${o.orderTime}</span>
-                            <span><span class="label">💳</span> ${o.payment}</span>
-                        </div>
-                        <div class="row">
-                            <span>${tagHtml}</span>
-                            <span><span class="label">📝</span> ${o.remark}</span>
-                        </div>
+                html += `
+                    <div class="customer-card" data-customer-id="${cust.id}">
+                        <div class="customer-face">${cust.face}</div>
+                        <div class="order-badge"><span>${foodEmoji}</span></div>
                     </div>
-                    <div class="actions">
-                        ${canTake ? 
-                            `<button class="btn-success" onclick="takeOrder(${o.id}, '${currentPlayer}')">✅ 接單</button>` :
-                            `<span style="font-size:13px;color:#888;">🔒 指定給 ${specifiedList}</span>`
-                        }
-                    </div>
-                </div>
-            `;
-        }).join('');
-    }
-
-    // ---- 已接單 ----
-    const takenContainer = document.getElementById('takenList');
-    if (taken.length === 0) {
-        takenContainer.innerHTML = '<div class="empty">尚無已接單</div>';
-    } else {
-        takenContainer.innerHTML = taken.map(o => `
-            <div class="order-item" style="border-left-color: #27ae60; background:#f0faf5;">
-                <div class="info">
-                    <div class="row">
-                        <span><span class="label">👤</span> ${o.client}</span>
-                        <span><span class="label">📞</span> ${o.contact}</span>
-                        <span><span class="label">⏰</span> ${o.orderTime}</span>
-                        <span><span class="label">💳</span> ${o.payment}</span>
-                    </div>
-                    <div class="row">
-                        <span><span class="tag-taken">✅ 已接單：${o.takenBy}</span></span>
-                        <span><span class="label">📝</span> ${o.remark}</span>
-                        <span style="font-size:12px;color:#888;">接單時間：${o.takenAt || '—'}</span>
-                    </div>
-                </div>
-                <div class="actions">
-                    <button class="btn-outline" onclick="releaseOrder(${o.id})">↩️ 釋放</button>
-                </div>
-            </div>
-        `).join('');
-    }
-}
-
-// ============================================================
-//  打手端：接單 / 釋放
-// ============================================================
-function takeOrder(orderId, playerName) {
-    const order = orders.find(o => o.id === orderId);
-    if (!order) return;
-    if (order.status === 'taken') {
-        alert('此單已被其他打手接走');
-        return;
-    }
-    // 如果有指定打手且名單中沒有自己，不能接
-    if (order.players.length > 0 && !order.players.includes(playerName)) {
-        alert(`此單已指定給 ${order.players.join('、')}，你不能接`);
-        return;
-    }
-    if (confirm(`確定要接 ${order.client} 的單嗎？`)) {
-        order.status = 'taken';
-        order.takenBy = playerName;
-        order.takenAt = new Date().toLocaleString();
-        save();
-        alert('✅ 接單成功！');
-    }
-}
-
-function releaseOrder(orderId) {
-    if (!confirm('確定要釋放此單嗎？（將回到待接單狀態）')) return;
-    const order = orders.find(o => o.id === orderId);
-    if (!order) return;
-    order.status = 'pending';
-    order.takenBy = null;
-    order.takenAt = null;
-    save();
-    alert('↩️ 已釋放此單');
-}
-
-// ============================================================
-//  打手身份切換
-// ============================================================
-function addPlayerSwitcher() {
-    const card = document.querySelector('#pagePlayer .card');
-    const title = card.querySelector('.card-title');
-    const switcher = document.createElement('div');
-    switcher.style.cssText = 'display:flex;align-items:center;gap:12px;margin-left:auto;flex-wrap:wrap;';
-    switcher.innerHTML = `
-        <span style="font-size:14px;font-weight:600;color:#555;">👤 當前打手：</span>
-        <select id="currentPlayerSelect" style="padding:6px 14px;border-radius:30px;border:1px solid #d0d7de;font-size:14px;font-weight:600;">
-            ${PLAYERS.map(p => `<option value="${p}">${p}</option>`).join('')}
-        </select>
-    `;
-    title.appendChild(switcher);
-
-    document.getElementById('currentPlayerSelect').addEventListener('change', function() {
-        renderPlayerView();
-    });
-}
-
-// ============================================================
-//  總渲染
-// ============================================================
-function renderAll() {
-    renderPlayerView();
-}
-
-// ============================================================
-//  頁籤切換
-// ============================================================
-document.querySelectorAll('.tab-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        this.classList.add('active');
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.getElementById(this.dataset.page).classList.add('active');
-        if (this.dataset.page === 'pagePlayer') {
-            renderPlayerView();
+                `;
+            });
+            customerQueue.innerHTML = html;
         }
-    });
-});
 
-// ============================================================
-//  初始化
-// ============================================================
-addPlayerSwitcher();
-renderAll();
+        // ---------- 新增客人 (隨機) ----------
+        function spawnCustomer() {
+            if (!gameActive) return;          // 遊戲結束就不生成
+            // 避免太多客人，佇列上限 5 位
+            if (customers.length >= 5) return;
 
-document.addEventListener('DOMContentLoaded', function() {
-    const now = new Date();
-    const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
-    document.getElementById('orderTime').value = local.toISOString().slice(0,16);
-});
+            // 隨機選擇餐點
+            const randomFood = randomItem(FOODS);
+            const randomFace = randomItem(FACES);
+
+            const newCustomer = {
+                id: nextCustomerId++,
+                face: randomFace,
+                order: randomFood.key,
+            };
+
+            customers.push(newCustomer);
+            renderCustomers();
+        }
+
+        // ---------- 開始遊戲 (重置並啟動) ----------
+        function startGame() {
+            // 停止所有計時器
+            if (timerInterval) clearInterval(timerInterval);
+            if (spawnInterval) clearInterval(spawnInterval);
+
+            // 重置狀態
+            gameActive = true;
+            money = 0;
+            timeLeft = 60;
+            customers = [];
+            nextCustomerId = 1;
+            updateMoneyDisplay();
+            updateTimerDisplay();
+            timerBox.classList.remove('warning');
+            messageArea.textContent = '點選餐點完成訂單！';
+            messageArea.style.color = '#664d33';
+
+            // 清空佇列並渲染
+            renderCustomers();
+
+            // 立刻產生第一位客人（讓遊戲不至於空等）
+            spawnCustomer();
+            // 每隔 2.2 秒產生一位新客人 (不要太密集)
+            spawnInterval = setInterval(() => {
+                spawnCustomer();
+            }, 2200);
+
+            // 倒數計時器
+            timerInterval = setInterval(() => {
+                if (!gameActive) return;   // 如果遊戲已結束，不再倒數
+
+                timeLeft -= 1;
+                updateTimerDisplay();
+
+                // 時間到，結束遊戲
+                if (timeLeft <= 0) {
+                    timeLeft = 0;
+                    updateTimerDisplay();
+                    endGame('時間到！');
+                }
+            }, 1000);
+        }
+
+        // ---------- 結束遊戲 ----------
+        function endGame(reason = '時間到！') {
+            if (!gameActive) return;   // 避免重複觸發
+
+            gameActive = false;
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+            if (spawnInterval) {
+                clearInterval(spawnInterval);
+                spawnInterval = null;
+            }
+
+            // 標記最後訊息
+            messageArea.textContent = `${reason} 最終金額：💰${money}`;
+            messageArea.style.color = '#a12b2b';
+
+            // 把所有客人卡片加個灰階? (視覺上沒差，但可以保留)
+            // 按鈕不能按 (css 處理，但用 pointer-events 更好)
+            // 直接將按鈕禁用? 我們用遊戲狀態控制 click 即可
+        }
+
+        // ---------- 處理出餐 (點擊餐點) ----------
+        function handleFoodClick(foodKey) {
+            if (!gameActive) {
+                // 遊戲未開始或已結束，不能出餐
+                return;
+            }
+
+            // 如果沒有客人
+            if (customers.length === 0) {
+                // 沒有客人時出餐 = 浪費? 小扣款? 這裡設計為口頭警告但不扣錢 (比較簡單)
+                setMessage('沒有客人喔！', false, 1000);
+                return;
+            }
+
+            // 找第一位客人 (排隊最前面的)
+            const firstCustomer = customers[0];
+            const orderedFood = firstCustomer.order;
+            const orderedItem = FOODS.find(f => f.key === orderedFood);
+            const orderedName = orderedItem ? orderedItem.name : orderedFood;
+
+            if (foodKey === orderedFood) {
+                // 正確出餐
+                // 賺錢 (每單 +20 元)
+                money += 20;
+                updateMoneyDisplay();
+                // 移除第一位客人
+                customers.shift();
+                renderCustomers();
+                // 提示成功
+                setMessage(`✅ 正確！${orderedName}  +20元`, true, 800);
+                // 如果客人空閒，可以加一點小獎勵? 不用
+            } else {
+                // 錯誤出餐 -> 扣款 10 元，但金額不會低於 0 (避免負數比較友善)
+                const penalty = 10;
+                money = Math.max(0, money - penalty);
+                updateMoneyDisplay();
+                // 扣款提示
+                setMessage(`❌ 弄錯了！客人要的是 ${orderedName}  (-10元)`, false, 1200);
+                // 錯誤時不移除客人，客人會繼續等
+            }
+        }
+
+        // ---------- 事件綁定 ----------
+        function bindEvents() {
+            // 餐點按鈕
+            foodBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const foodKey = btn.dataset.food;
+                    handleFoodClick(foodKey);
+                });
+            });
+
+            // 重置按鈕
+            resetBtn.addEventListener('click', () => {
+                // 停止所有計時器
+                if (timerInterval) clearInterval(timerInterval);
+                if (spawnInterval) clearInterval(spawnInterval);
+                // 重新開始
+                startGame();
+            });
+
+            // 避免雙擊按鈕時選取文字
+            foodBtns.forEach(btn => {
+                btn.addEventListener('mousedown', (e) => e.preventDefault());
+            });
+        }
+
+        // ---------- 初始化 (頁面載入時啟動) ----------
+        function init() {
+            bindEvents();
+            // 直接開始遊戲
+            startGame();
+        }
+
+        // 頁面載入完成後執行
+        window.addEventListener('DOMContentLoaded', init);
+
+        // 如果腳本在DOM之後執行，也確保啟動
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+
+    })();
 </script>
 </body>
 </html>
