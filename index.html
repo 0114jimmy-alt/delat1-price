@@ -70,7 +70,7 @@ function persist(){try{localStorage.setItem('openRoadSave',JSON.stringify(save))
 let W=innerWidth,H=innerHeight,dpr=1;
 function resize(){W=innerWidth;H=innerHeight;dpr=Math.min(devicePixelRatio||1,2);canvas.width=Math.round(W*dpr);canvas.height=Math.round(H*dpr);canvas.style.width=W+'px';canvas.style.height=H+'px';ctx.setTransform(dpr,0,0,dpr,0,0)}
 addEventListener('resize',resize);resize();
-let running=false,paused=false,menuOpen=true,world=0,roadX=0,playerX=0,speed=0,dist=0,coinRun=0,hitFlash=0,hitCooldown=0,traffic=[],buildings=[],last=0;
+let running=false,paused=false,menuOpen=true,world=0,roadX=0,playerX=0,speed=0,dist=0,coinRun=0,hitFlash=0,hitCooldown=0,traffic=[],last=0;
 let input={left:false,right:false,gas:false,brake:false};
 let soundOn=true,audio=null,engineOsc=null,engineGain=null,musicTimer=null,musicStep=0;
 function audioStart(){if(!soundOn)return;try{audio=audio||new (window.AudioContext||window.webkitAudioContext)();if(audio.state==='suspended')audio.resume();if(!engineOsc){engineOsc=audio.createOscillator();engineGain=audio.createGain();engineOsc.type='sawtooth';engineGain.gain.value=0;engineOsc.connect(engineGain);engineGain.connect(audio.destination);engineOsc.start()}if(!musicTimer){musicTimer=setInterval(()=>{if(!soundOn||!audio||audio.state!=='running')return;const notes=[220,277,330,277,196,247,294,247];const o=audio.createOscillator(),g=audio.createGain();o.type='sine';o.frequency.value=notes[musicStep++%notes.length];g.gain.setValueAtTime(.025,audio.currentTime);g.gain.exponentialRampToValueAtTime(.001,audio.currentTime+.18);o.connect(g);g.connect(audio.destination);o.start();o.stop(audio.currentTime+.2)},260)}}catch(e){}}
@@ -78,8 +78,8 @@ function beep(freq=130,dur=.15,type='square',vol=.08){if(!soundOn)return;try{aud
 function updateEngine(){if(engineOsc&&audio){engineOsc.frequency.setTargetAtTime(65+speed*2.4,audio.currentTime,.08);engineGain.gain.setTargetAtTime(soundOn&&running?Math.min(.045,speed/1800):0,audio.currentTime,.08)}}
 function updateUI(){
  $('carLabel').textContent=cars[save.car].name;$('selectedCar').textContent=cars[save.car].name;$('carDesc').textContent=cars[save.car].desc;
- $('speed').textContent=Math.round(speed*1.5);$('distance').textContent=Math.floor(dist);$('coins').textContent=save.coins;$('best').textContentL=save.best;
- $('garageCoins').textContent=save.coins;$('enginev').textContent=save.engine;$('handlingLv').textContent=save.handling;$('brakeLv').textContent=save.brake;
+ $('speed').textContent=Math.round(speed*1.5);$('distance').textContent=Math.floor(dist);$('coins').textContent=save.coins;$('best').textContent=save.best;
+ $('garageCoins').textContent=save.coins;$('engineLv').textContent=save.engine;$('handlingLv').textContent=save.handling;$('brakeLv').textContent=save.brake;
  $('recordBest').textContent=save.best+' m';$('recordTotal').textContent=save.total+' m';$('recordCoins').textContent=save.coins;$('recordHits').textContent=save.hits;
  $('upgradeEngine').textContent='升級（'+(save.engine*100)+'）';$('upgradeHandling').textContent='升級（'+(save.handling*100)+'）';$('upgradeBrake').textContent='升級（'+(save.brake*100)+'）';
  $('prevCar').disabled=save.unlocked.length<2;$('nextCar').disabled=save.unlocked.length<2;
@@ -94,14 +94,45 @@ function upgrade(key){const lv=save[key],cost=lv*100;if(lv>=5){showNotice('已�
 $('upgradeEngine').onclick=()=>upgrade('engine');$('upgradeHandling').onclick=()=>upgrade('handling');$('upgradeBrake').onclick=()=>upgrade('brake');
 $('soundToggle').onclick=()=>{soundOn=!soundOn;$('soundToggle').textContent=soundOn?'🔊 音效：開':'🔇 音效：關';if(soundOn)audioStart();else if(engineGain&&audio)engineGain.gain.setTargetAtTime(0,audio.currentTime,.05)};
 $('resetData').onclick=()=>{if(confirm('確定重設所有遊戲紀錄與解鎖車輛？')){save={...defaults,unlocked:[0]};persist();showNotice('資料已重設')}};
-$('start').onclick=()=>{audioStart();$('menu').style.display='none';running=true;menuOpen=false;last=performance.now();if(!traffic.length)spawnTraffic();showNotice('自由駕駛開始！')};
+
+// 修正：start 只綁定一次，並正確啟動遊戲循環
+$('start').onclick=()=>{
+  audioStart();
+  $('menu').style.display='none';
+  running=true;menuOpen=false;
+  last=performance.now();
+  if(!traffic.length)spawnTraffic();
+  showNotice('自由駕駛開始！');
+  requestAnimationFrame(loop);
+};
+
 function spawnTraffic(){traffic=[];for(let i=0;i<8;i++)traffic.push({x:(Math.random()-.5)*.9,y:-i*260-200,s:0.7+Math.random()*.55,color:['#e65b50','#f1c75b','#5a92db','#e7edf2'][i%4],passed:false})}
 const keys={ArrowLeft:'left',a:'left',ArrowRight:'right',d:'right',ArrowUp:'gas',w:'gas',ArrowDown:'brake',s:'brake',' ':'brake'};
 addEventListener('keydown',e=>{if(keys[e.key]){input[keys[e.key]]=true;e.preventDefault()}if(e.key==='Escape'&&running)toggleMenu()});
 addEventListener('keyup',e=>{if(keys[e.key])input[keys[e.key]]=false});
-document.querySelectorAll('[data-control]').forEach(b=>{const k=b.dataset.control;const down=e=>{e.preventDefault();input[k]=true;b.classList.add('active');if(k==='gas'){audioStart();if(speed===0&&hitCooldown>0){hitCooldown=0;showNotice('重新起步')}}};const up=e=>{e.preventDefault();input[k]=false;b.classList.remove('active')};b.addEventListener('pointerdown',down);['pointerup','pointercancel','pointerleave'].forEach(ev=>b.addEventListener(ev,up))});
+
+// 修正：按鈕事件改用 pointerdown/up，並加上 touchstart 兼容
+document.querySelectorAll('[data-control]').forEach(b=>{
+  const k=b.dataset.control;
+  const down=e=>{
+    e.preventDefault();e.stopPropagation();
+    input[k]=true;b.classList.add('active');
+    if(k==='gas'){audioStart();if(speed===0&&hitCooldown>0){hitCooldown=0;showNotice('重新起步')}}
+  };
+  const up=e=>{e.preventDefault();e.stopPropagation();input[k]=false;b.classList.remove('active')};
+  b.addEventListener('pointerdown',down);
+  b.addEventListener('pointerup',up);
+  b.addEventListener('pointercancel',up);
+  b.addEventListener('pointerleave',up);
+  // 兼容舊版 iOS
+  b.addEventListener('touchstart',down,{passive:false});
+  b.addEventListener('touchend',up,{passive:false});
+  b.addEventListener('touchcancel',up,{passive:false});
+});
+
 function toggleMenu(){running=false;$('menu').style.display='flex';menuOpen=true;updateUI()}
 function collide(){if(hitCooldown>0)return;speed=0;hitCooldown=1.2;hitFlash=.6;save.hits++;beep(75,.28,'sawtooth',.13);showNotice('碰撞！車輛停止，按油門重新起步');persist()}
+
 function update(dt){
  if(!running)return;
  hitCooldown=Math.max(0,hitCooldown-dt);hitFlash=Math.max(0,hitFlash-dt);
@@ -120,7 +151,9 @@ function update(dt){
  if(dist>save.best){save.best=Math.floor(dist)}
  updateEngine();updateUI();
 }
+
 function roadCurve(z){return Math.sin((world+z)*.0011)*W*.09+Math.sin((world+z)*.00043)*W*.06}
+
 function drawCar(x,y,w,h,color,player=false){
  ctx.save();ctx.translate(x,y);ctx.fillStyle='#0004';ctx.beginPath();ctx.ellipse(2,h*.25,w*.7,h*.55,0,0,Math.PI*2);ctx.fill();
  ctx.fillStyle=color;ctx.beginPath();ctx.moveTo(-w*.42,h*.5);ctx.lineTo(-w*.5,-h*.15);ctx.lineTo(-w*.29,-h*.48);ctx.lineTo(w*.29,-h*.48);ctx.lineTo(w*.5,-h*.15);ctx.lineTo(w*.42,h*.5);ctx.closePath();ctx.fill();
@@ -128,31 +161,33 @@ function drawCar(x,y,w,h,color,player=false){
  ctx.fillStyle=player?'#ffed9c':'#ff413e';ctx.fillRect(-w*.36,h*.25,w*.2,h*.09);ctx.fillRect(w*.16,h*.25,w*.2,h*.09);
  ctx.fillStyle='#111';ctx.fillRect(-w*.53,-h*.25,w*.12,h*.25);ctx.fillRect(w*.41,-h*.25,w*.12,h*.25);ctx.fillRect(-w*.53,h*.2,w*.12,h*.25);ctx.fillRect(w*.41,h*.2,w*.12,h*.25);ctx.restore();
 }
+
 function render(){
  ctx.clearRect(0,0,W,H);
  const horizon=H*.31;
  ctx.fillStyle='#9ed9ed';ctx.fillRect(0,0,W,horizon);
- // skyline and distant hills
  ctx.fillStyle='#80b6b1';for(let i=0;i<12;i++){let x=i*W/10-(world*.08% (W/10));let hh=25+(i*37%70);ctx.fillRect(x,horizon-hh,W/18,hh)}
  ctx.fillStyle='#5d9d67';ctx.fillRect(0,horizon,W,H-horizon);
- // side city blocks
  for(let i=0;i<10;i++){let y=((i*120+world*.7)%(H+120))-60;let bh=35+(i*23%60);ctx.fillStyle=i%2?'#c8c4b5':'#d9d2c1';ctx.fillRect(8+Math.sin(i)*18,y,bh*.65,bh);ctx.fillRect(W-bh*.7-8,y+25,bh*.65,bh)}
- // road perspective trapezoid
  let cx=W/2+roadCurve(0);const topW=Math.min(W*.24,150),botW=Math.min(W*.95,650);
  ctx.fillStyle='#555d63';ctx.beginPath();ctx.moveTo(cx-topW/2,horizon);ctx.lineTo(cx+topW/2,horizon);ctx.lineTo(W/2+botW/2,H);ctx.lineTo(W/2-botW/2,H);ctx.closePath();ctx.fill();
  ctx.strokeStyle='#e9e5cf';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(cx-topW/2,horizon);ctx.lineTo(W/2-botW/2,H);ctx.moveTo(cx+topW/2,horizon);ctx.lineTo(W/2+botW/2,H);ctx.stroke();
- // lane markers
  for(let i=0;i<12;i++){let z=((i*95+world*1.4)%(H-horizon));let p=z/(H-horizon),y=horizon+z;let width=1+p*4;ctx.fillStyle='#f8f3d9';ctx.fillRect(W/2+roadCurve(z)-width/2,y,width,12+p*25)}
- // traffic
  for(const t of traffic){let p=Math.max(.2,Math.min(1.3,(t.y-horizon)/(H-horizon)));let x=W/2+roadCurve(t.y)+t.x*(botW*.42);drawCar(x,t.y,20+p*18,35+p*22,t.color,false)}
  drawCar(W/2+playerX*W*.28,H*.76,Math.max(34,W*.065),Math.max(58,H*.12),cars[save.car].color,true);
  if(hitFlash>0){ctx.fillStyle=`rgba(255,60,50,${hitFlash*.25})`;ctx.fillRect(0,0,W,H)}
- if(running)requestAnimationFrame(render);
 }
-function loop(ts){const dt=Math.min(.04,(ts-last)/1000||0);last=ts;update(dt);if(running)requestAnimationFrame(loop)}
-const originalStart=$('start').onclick;
-$('start').onclick=()=>{originalStart();last=performance.now();requestAnimationFrame(loop);requestAnimationFrame(render)};
-updateUI();render();
+
+// 修正：單一遊戲循環，同時處理 update 和 render
+function loop(ts){
+  const dt=Math.min(.04,(ts-last)/1000||0);last=ts;
+  update(dt);
+  render();
+  if(running)requestAnimationFrame(loop);
+}
+
+updateUI();
+render(); // 初始畫面
 })();
 </script>
 </body>
